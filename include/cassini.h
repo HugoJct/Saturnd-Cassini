@@ -15,5 +15,6 @@
 #include "client-request.h"
 #include "server-reply.h"
 #include "utils/requests.h"
+#include "utils/custom_string.h"
 
 #endif // CASSINI
