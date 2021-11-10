@@ -88,6 +88,28 @@ int main(int argc, char * argv[]) {
   // --------
   // | TODO |
   // --------
+  int pipe_req = open("run/pipes/saturnd-request-pipe",O_WRONLY);
+  int ret;
+  assert(pipe_req >= 0);
+
+  switch(operation) {
+	case CLIENT_REQUEST_LIST_TASKS:
+		ret = send_ls_req(pipe_req);
+		assert(ret >= 0);
+		break;
+	case CLIENT_REQUEST_CREATE_TASK:
+		break;
+	case CLIENT_REQUEST_TERMINATE:
+		break;
+	case CLIENT_REQUEST_REMOVE_TASK:
+		break;
+	case CLIENT_REQUEST_GET_TIMES_AND_EXITCODES:
+		break;
+	case CLIENT_REQUEST_GET_STDOUT:
+		break;
+	case CLIENT_REQUEST_GET_STDERR:
+		break;
+  }
   
   return EXIT_SUCCESS;
 
