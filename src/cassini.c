@@ -88,6 +88,7 @@ int main(int argc, char * argv[]) {
   // --------
   // | TODO |
   // --------
+
   int pipe_req = open("run/pipes/saturnd-request-pipe",O_WRONLY);
   int ret;
   assert(pipe_req >= 0);
@@ -100,6 +101,8 @@ int main(int argc, char * argv[]) {
 	case CLIENT_REQUEST_CREATE_TASK:
 		break;
 	case CLIENT_REQUEST_TERMINATE:
+		ret = send_tm_req(pipe_req);
+		assert(ret >= 0);
 		break;
 	case CLIENT_REQUEST_REMOVE_TASK:
 		break;
@@ -110,7 +113,7 @@ int main(int argc, char * argv[]) {
 	case CLIENT_REQUEST_GET_STDERR:
 		break;
   }
-  
+
   return EXIT_SUCCESS;
 
  error:
