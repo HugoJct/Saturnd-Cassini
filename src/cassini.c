@@ -114,6 +114,17 @@ int main(int argc, char * argv[]) {
 		break;
   }
 
+  /*	Example of string building, formatting and writing 
+   
+  struct custom_string t;				//creating 
+  create_custom_string(&t,"echo test-l");
+
+  char buf[256];					//formatting
+  format_from_string(buf,&t);
+
+  write(1,buf,sizeof(uint32_t) + be32toh(t.length));	//writing 
+  */
+
   return EXIT_SUCCESS;
 
  error:

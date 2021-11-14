@@ -7,4 +7,4 @@ $(EXEC): src/cassini.o src/utils/requests.o src/utils/custom_string.o
 %.o : %.c
 	$(CC) $(CFLAGS) -o $@ -c $<
 distclean:
-	@rm -rf *.o src/*.o cassini
+	@rm -rf *.o src/*.o src/utils/*.o cassini
