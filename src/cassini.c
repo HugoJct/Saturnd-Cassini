@@ -69,7 +69,7 @@ int main(int argc, char * argv[]) {
       break;
     case 'o':
       operation = CLIENT_REQUEST_GET_STDOUT;
-      taskid = strtoull(optarg, &strtoull_endp, 10);  
+      taskid = strtoull(optarg, &strtoull_endp, 10);
       if (strtoull_endp == optarg || strtoull_endp[0] != '\0') goto error;
       break;
     case 'e':
@@ -88,7 +88,7 @@ int main(int argc, char * argv[]) {
 
   int pipe_req = open("run/pipes/saturnd-request-pipe",O_WRONLY);
   assert(pipe_req >= 0);
-  
+
   int ret;
   char **new_argv = &argv[optind]; //On initialise new_argv à l'adresse du premier élément de argv qui définit la commande
   int new_argc = argc-optind; //Le nombre d'arguments que possede notre fonction à traiter par le démon
@@ -107,6 +107,8 @@ int main(int argc, char * argv[]) {
   		assert(ret >= 0);
   		break;
   	case CLIENT_REQUEST_REMOVE_TASK:
+      ret = send_rm_req(pipe_req, taskid);
+      assert(ret >= 0);
   		break;
   	case CLIENT_REQUEST_GET_TIMES_AND_EXITCODES:
   		break;
