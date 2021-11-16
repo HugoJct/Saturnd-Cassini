@@ -88,7 +88,43 @@ int main(int argc, char * argv[]) {
   // --------
   // | TODO |
   // --------
-  
+
+  int pipe_req = open("run/pipes/saturnd-request-pipe",O_WRONLY);
+  int ret;
+  assert(pipe_req >= 0);
+
+  switch(operation) {
+	case CLIENT_REQUEST_LIST_TASKS:
+		ret = send_ls_req(pipe_req);
+		assert(ret >= 0);
+		break;
+	case CLIENT_REQUEST_CREATE_TASK:
+		break;
+	case CLIENT_REQUEST_TERMINATE:
+		ret = send_tm_req(pipe_req);
+		assert(ret >= 0);
+		break;
+	case CLIENT_REQUEST_REMOVE_TASK:
+		break;
+	case CLIENT_REQUEST_GET_TIMES_AND_EXITCODES:
+		break;
+	case CLIENT_REQUEST_GET_STDOUT:
+		break;
+	case CLIENT_REQUEST_GET_STDERR:
+		break;
+  }
+
+  /*	Example of string building, formatting and writing 
+   
+  struct custom_string t;				//creating 
+  create_custom_string(&t,"echo test-l");
+
+  char buf[256];					//formatting
+  format_from_string(buf,&t);
+
+  write(1,buf,sizeof(uint32_t) + be32toh(t.length));	//writing 
+  */
+
   return EXIT_SUCCESS;
 
  error:
