@@ -68,7 +68,7 @@ int main(int argc, char * argv[]) {
       break;
     case 'o':
       operation = CLIENT_REQUEST_GET_STDOUT;
-      taskid = strtoull(optarg, &strtoull_endp, 10);
+      taskid = strtoull(optarg, &strtoull_endp, 10);  
       if (strtoull_endp == optarg || strtoull_endp[0] != '\0') goto error;
       break;
     case 'e':
@@ -109,6 +109,8 @@ int main(int argc, char * argv[]) {
 	case CLIENT_REQUEST_GET_TIMES_AND_EXITCODES:
 		break;
 	case CLIENT_REQUEST_GET_STDOUT:
+    ret = send_stdout_req(pipe_req, taskid);
+    assert(ret >= 0);
 		break;
 	case CLIENT_REQUEST_GET_STDERR:
 		break;
