@@ -10,4 +10,4 @@ struct commandline{
 }
 
 
-int create_commandline(struct *commandline command);
+int create_commandline(struct commandline *command);
