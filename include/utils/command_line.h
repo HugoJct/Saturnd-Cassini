@@ -3,11 +3,12 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <unistd.h>
+#include "custom_string.h"
 
 struct commandline{
   uint32_t ARGC;
-  char *ARGV;
-}
+  struct custom_string **ARGV;
+};
 
 
-int create_commandline(struct commandline *command);
+int create_commandline(struct commandline *command, char *argv);
