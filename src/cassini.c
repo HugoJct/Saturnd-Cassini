@@ -1,4 +1,5 @@
 #include "cassini.h"
+#include "utils/command_line.h"
 
 const char usage_info[] = "\
    usage: cassini [OPTIONS] -l -> list all tasks\n\
@@ -20,16 +21,16 @@ const char usage_info[] = "\
 ";
 
 int main(int argc, char * argv[]) {
-  errno = 0;
-  
+/*  errno = 0;
+
   char * minutes_str = "*";
   char * hours_str = "*";
   char * daysofweek_str = "*";
   char * pipes_directory = NULL;
-  
+
   uint16_t operation = CLIENT_REQUEST_LIST_TASKS;
   uint64_t taskid;
-  
+
   int opt;
   char * strtoull_endp;
   while ((opt = getopt(argc, argv, "hlcqm:H:d:p:r:x:o:e:")) != -1) {
@@ -90,9 +91,30 @@ int main(int argc, char * argv[]) {
   // --------
 
   int pipe_req = open("run/pipes/saturnd-request-pipe",O_WRONLY);
-  int ret;
   assert(pipe_req >= 0);
+  int ret;
 
+*/
+  int opt;
+//les nouveaux argc et argv qui contiennent seulement la commande
+  char **new_argv = *argv[opt];
+  int new_argc = argc-opt; //afin d'optenir le nombre d'argument de la fonction
+
+//Test commandLine
+printf("test 1\n");
+
+ struct commandline command;
+ printf("test 2\n");
+
+ int erreur = create_commandline(&command, new_argc, new_argv);
+ if(erreur == -1){
+   printf("erreur\n");
+ }else{
+   for(int i = 0; i < sizeof(command.ARGV); i++){
+     printf(command.ARGV[i]->data);
+   }
+ }
+/*
   switch(operation) {
 	case CLIENT_REQUEST_LIST_TASKS:
 		ret = send_ls_req(pipe_req);
@@ -113,24 +135,23 @@ int main(int argc, char * argv[]) {
 	case CLIENT_REQUEST_GET_STDERR:
 		break;
   }
+*/
+  /*	Example of string building, formatting and writing
 
-  /*	Example of string building, formatting and writing 
-   
-  struct custom_string t;				//creating 
+  struct custom_string t;				//creating
   create_custom_string(&t,"echo test-l");
 
   char buf[256];					//formatting
   format_from_string(buf,&t);
 
-  write(1,buf,sizeof(uint32_t) + be32toh(t.length));	//writing 
-  */
+  write(1,buf,sizeof(uint32_t) + be32toh(t.length));	//writing
+*/
 
   return EXIT_SUCCESS;
 
- error:
+/* error:
   if (errno != 0) perror("main");
   free(pipes_directory);
   pipes_directory = NULL;
   return EXIT_FAILURE;
-}
-
+*/}

@@ -11,4 +11,4 @@ struct commandline{
 };
 
 
-int create_commandline(struct commandline *command, char *argv);
+int create_commandline(struct commandline *command, int argc, char *argv[]);

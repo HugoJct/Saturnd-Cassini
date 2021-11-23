@@ -3,46 +3,32 @@
 #include <assert.h>
 
 
-int create_commandline(struct commandline *command, char *argv){
+int create_commandline(struct commandline *command, int argc, char *argv[]){
 
-  if(argv == NULL || argv[0] == '\0'){
+  if(argv == NULL){
     return -1;
   }
-
   int rep;
-  int i;
-
-  const char * separator = " -";
-  char *copyArgv = strdup(argv); //copy car strtok modifie la chaine, hors argv n'est pas directement accessible
-  //TODO: ne pas oublier de free();
-  char *strtoken = strtok(copyArgv, separator);
-
   struct custom_string *stringcustom;
-  struct custom_string **p = malloc(sizeof(struct custom_string));
+  struct custom_string **p = malloc(sizeof(struct custom_string)*argc);
   assert(p != NULL);
 
-  while (strtoken != NULL ) {
-
+  for (int i = 0; i < argc; i++){
     stringcustom = malloc(sizeof(struct custom_string));
     assert(stringcustom != NULL);
-    printf("%s\n", "prout");
-    rep = create_custom_string(stringcustom ,strtoken);
+
+    rep = create_custom_string(stringcustom , argv[i]);
+    printf("%s\n", "TEST");
+
     if(rep == -1){
       return -1;
     }
 
-
-    p = realloc(p, sizeof(struct custom_string)+i);
-    assert(p != NULL);
     p[i] = stringcustom;
-    //printf("%s\n", p[i]->data);
-    i++;
-    strtoken = strtok ( NULL, separator);
+    printf("%s est une entrée \n", p[i]->data);
   }
-  command->ARGC = htobe32(i);
+  command->ARGC = htobe32(argc);
   command->ARGV = p;
 
-  //Malloc
-  free(copyArgv);
   return 0;
 }
