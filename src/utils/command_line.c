@@ -5,28 +5,25 @@
 
 int create_commandline(struct commandline *command, int argc, char *argv[]){
 
-  if(argv == NULL){
+  if(argv == NULL){ //TODO: verifier arguments vide
     return -1;
   }
-  int rep;
-  struct custom_string *stringcustom;
-  struct custom_string **p = malloc(sizeof(struct custom_string)*argc);
+
+  int rep; //retient les erreurs possibles
+  struct custom_string *stringcustom; //creation d'un object custom_string
+  struct custom_string **p = malloc(sizeof(struct custom_string)*argc); // création d'un tableau de custom_string
   assert(p != NULL);
 
-  for (int i = 0; i < argc; i++){
-    stringcustom = malloc(sizeof(struct custom_string));
+  for (int i = 0; i < argc; i++){ //pour tous les agurments présent dans argv
+    stringcustom = malloc(sizeof(struct custom_string)); //allocation en mémoire
     assert(stringcustom != NULL);
-
-    rep = create_custom_string(stringcustom , argv[i]);
-    printf("%s\n", "TEST");
-
+    rep = create_custom_string(stringcustom , argv[i]); //creation d'un string_custom à partir d'un élément du tableau argv (string basique vers string custom)
     if(rep == -1){
       return -1;
     }
-
     p[i] = stringcustom;
-    printf("%s est une entrée \n", p[i]->data);
   }
+  //initlisation de la structure
   command->ARGC = htobe32(argc);
   command->ARGV = p;
 

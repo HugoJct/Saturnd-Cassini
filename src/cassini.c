@@ -21,7 +21,7 @@ const char usage_info[] = "\
 ";
 
 int main(int argc, char * argv[]) {
-/*  errno = 0;
+  errno = 0;
 
   char * minutes_str = "*";
   char * hours_str = "*";
@@ -93,49 +93,39 @@ int main(int argc, char * argv[]) {
   int pipe_req = open("run/pipes/saturnd-request-pipe",O_WRONLY);
   assert(pipe_req >= 0);
   int ret;
+  char **new_argv = (argv+opt); //On se deplace à argv + opt pour obtenir uniquement les arguments de la fonction à traiter par le démon
+  int new_argc = argc-opt; //Le nombre d'arguments que possede notre fonction à traiter par le démon
 
-*/
-  int opt;
-//les nouveaux argc et argv qui contiennent seulement la commande
-  char **new_argv = *argv[opt];
-  int new_argc = argc-opt; //afin d'optenir le nombre d'argument de la fonction
+  /*Exemple
+    ./cassini -m 1,5-10 -c echo -e "toto \n titi"
+                           |
+                      opt s'arrete ici à compter
 
-//Test commandLine
-printf("test 1\n");
+    donc argv[opt] = "echo" "-e" "toto \n titi"
+    et argc-opt = téléporte le nombre d'arguments à argc - opt
+  */
 
- struct commandline command;
- printf("test 2\n");
-
- int erreur = create_commandline(&command, new_argc, new_argv);
- if(erreur == -1){
-   printf("erreur\n");
- }else{
-   for(int i = 0; i < sizeof(command.ARGV); i++){
-     printf(command.ARGV[i]->data);
-   }
- }
-/*
   switch(operation) {
-	case CLIENT_REQUEST_LIST_TASKS:
-		ret = send_ls_req(pipe_req);
-		assert(ret >= 0);
-		break;
-	case CLIENT_REQUEST_CREATE_TASK:
-		break;
-	case CLIENT_REQUEST_TERMINATE:
-		ret = send_tm_req(pipe_req);
-		assert(ret >= 0);
-		break;
-	case CLIENT_REQUEST_REMOVE_TASK:
-		break;
-	case CLIENT_REQUEST_GET_TIMES_AND_EXITCODES:
-		break;
-	case CLIENT_REQUEST_GET_STDOUT:
-		break;
-	case CLIENT_REQUEST_GET_STDERR:
-		break;
+  	case CLIENT_REQUEST_LIST_TASKS:
+  		ret = send_ls_req(pipe_req);
+  		assert(ret >= 0);
+  		break;
+  	case CLIENT_REQUEST_CREATE_TASK:
+  		break;
+  	case CLIENT_REQUEST_TERMINATE:
+  		ret = send_tm_req(pipe_req);
+  		assert(ret >= 0);
+  		break;
+  	case CLIENT_REQUEST_REMOVE_TASK:
+  		break;
+  	case CLIENT_REQUEST_GET_TIMES_AND_EXITCODES:
+  		break;
+  	case CLIENT_REQUEST_GET_STDOUT:
+  		break;
+  	case CLIENT_REQUEST_GET_STDERR:
+  		break;
   }
-*/
+
   /*	Example of string building, formatting and writing
 
   struct custom_string t;				//creating
@@ -149,9 +139,9 @@ printf("test 1\n");
 
   return EXIT_SUCCESS;
 
-/* error:
+ error:
   if (errno != 0) perror("main");
   free(pipes_directory);
   pipes_directory = NULL;
   return EXIT_FAILURE;
-*/}
+  }
