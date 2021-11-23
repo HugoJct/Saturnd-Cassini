@@ -6,6 +6,8 @@
 #include <endian.h>
 #include <stdlib.h>
 #include <stdint.h>
+#include <stdio.h>
+#include <string.h>
 
 /*
  *	All request functions return 0 on success and -1 on error

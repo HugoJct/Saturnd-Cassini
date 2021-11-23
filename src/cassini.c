@@ -92,7 +92,7 @@ int main(int argc, char * argv[]) {
   int pipe_req = open("run/pipes/saturnd-request-pipe",O_WRONLY);
   int ret;
   assert(pipe_req >= 0);
-
+  
   switch(operation) {
 	case CLIENT_REQUEST_LIST_TASKS:
 		ret = send_ls_req(pipe_req);
@@ -113,6 +113,8 @@ int main(int argc, char * argv[]) {
     assert(ret >= 0);
 		break;
 	case CLIENT_REQUEST_GET_STDERR:
+      //ret = send_stder_req(pipe_req, taskid);
+      //assert(ret >= 0);
 		break;
   }
 
