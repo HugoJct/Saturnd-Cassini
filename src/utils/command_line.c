@@ -12,27 +12,37 @@ int create_commandline(struct commandline *command, char *argv){
   int rep;
   int i;
 
-  char * strtoken = strtok (argv, " ");
+  const char * separator = " -";
+  char *copyArgv = strdup(argv); //copy car strtok modifie la chaine, hors argv n'est pas directement accessible
+  //TODO: ne pas oublier de free();
+  char *strtoken = strtok(copyArgv, separator);
+
   struct custom_string *stringcustom;
+  struct custom_string **p = malloc(sizeof(struct custom_string));
+  assert(p != NULL);
 
   while (strtoken != NULL ) {
 
     stringcustom = malloc(sizeof(struct custom_string));
-    printf("test 3\n");
-
     assert(stringcustom != NULL);
-
+    printf("%s\n", "prout");
     rep = create_custom_string(stringcustom ,strtoken);
     if(rep == -1){
       return -1;
     }
-    struct custom_string **p = realloc(command->ARGV, sizeof(struct custom_string)+i);
-    assert( p != NULL);
-    command->ARGV = p;
-    command->ARGV[i] = stringcustom;
-    i++;
-  }
 
+
+    p = realloc(p, sizeof(struct custom_string)+i);
+    assert(p != NULL);
+    p[i] = stringcustom;
+    //printf("%s\n", p[i]->data);
+    i++;
+    strtoken = strtok ( NULL, separator);
+  }
   command->ARGC = htobe32(i);
+  command->ARGV = p;
+
+  //Malloc
+  free(copyArgv);
   return 0;
 }
