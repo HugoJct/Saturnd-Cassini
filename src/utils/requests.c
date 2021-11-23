@@ -18,8 +18,8 @@ int send_stdout_req(int fd, uint64_t taskid) {
 	// BUFF
 	char buf[sizeof(taskid)+sizeof(op_code)]; // 16/8 + 64/8
 	// filling
-	memmove(buf, &op_code, sizeof(uint16_t));
-	memmove(buf+sizeof(uint16_t), &big_taskid, sizeof(uint64_t));
+	memmove(buf, &op_code, sizeof(big_taskid));
+	memmove(buf+sizeof(big_taskid), &big_taskid, sizeof(op_code));
 	// writing
 	int count = write(fd, &buf, sizeof(buf));
 	//print buf
