@@ -16,5 +16,6 @@
 #include "server-reply.h"
 #include "utils/requests.h"
 #include "utils/custom_string.h"
+#include "timing.h"
 
 #endif // CASSINI

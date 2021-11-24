@@ -30,7 +30,7 @@ int create_custom_string(struct custom_string *dest, char *str);
 int format_from_string(char *dest, struct custom_string *str);			
 /*
  * This function writes a formatted custom_string into the buffer 
- * Returns 0 on success, -1 on error
+ * Returns the number of bytes written on success, -1 on error
  */
 
 #endif

@@ -86,61 +86,39 @@ int main(int argc, char * argv[]) {
     }
   }
 
-  // --------
-  // | TODO |
-  // --------
-
   int pipe_req = open("run/pipes/saturnd-request-pipe",O_WRONLY);
   assert(pipe_req >= 0);
   
   int ret;
-  char **new_argv = (argv+opt); //On se deplace à argv + opt pour obtenir uniquement les arguments de la fonction à traiter par le démon
-  int new_argc = argc-opt; //Le nombre d'arguments que possede notre fonction à traiter par le démon
+  char **new_argv = &argv[optind]; //On initialise new_argv à l'adresse du premier élément de argv qui définit la commande
+  int new_argc = argc-optind; //Le nombre d'arguments que possede notre fonction à traiter par le démon
 
-  /*Exemple
-    ./cassini -m 1,5-10 -c echo -e "toto \n titi"
-                           |
-                      opt s'arrete ici à compter
-
-    donc argv[opt] = "echo" "-e" "toto \n titi"
-    et argc-opt = téléporte le nombre d'arguments à argc - opt
-  */  
-  
-  switch(operation) {
-	case CLIENT_REQUEST_LIST_TASKS:
-		ret = send_ls_req(pipe_req);
+ switch(operation) {
+  	case CLIENT_REQUEST_LIST_TASKS:
+  		ret = send_ls_req(pipe_req);
+  		assert(ret >= 0);
+  		break;
+  	case CLIENT_REQUEST_CREATE_TASK:
+		ret = send_cr_req(pipe_req,minutes_str,hours_str,daysofweek_str,new_argc,new_argv);
 		assert(ret >= 0);
-		break;
-	case CLIENT_REQUEST_CREATE_TASK:
-		break;
-	case CLIENT_REQUEST_TERMINATE:
-		ret = send_tm_req(pipe_req);
+  		break;
+  	case CLIENT_REQUEST_TERMINATE:
+  		ret = send_tm_req(pipe_req);
+  		assert(ret >= 0);
+  		break;
+  	case CLIENT_REQUEST_REMOVE_TASK:
+  		break;
+  	case CLIENT_REQUEST_GET_TIMES_AND_EXITCODES:
+  		break;
+  	case CLIENT_REQUEST_GET_STDOUT:
+		ret = send_stdout_req(pipe_req, taskid);
 		assert(ret >= 0);
-		break;
-	case CLIENT_REQUEST_REMOVE_TASK:
-		break;
-	case CLIENT_REQUEST_GET_TIMES_AND_EXITCODES:
-		break;
-	case CLIENT_REQUEST_GET_STDOUT:
-    ret = send_stdout_req(pipe_req, taskid);
-    assert(ret >= 0);
-		break;
-	case CLIENT_REQUEST_GET_STDERR:
-      ret = send_stder_req(pipe_req, taskid);
-      assert(ret >= 0);
-		break;
-  }
-
-  /*	Example of string building, formatting and writing
-
-  struct custom_string t;				//creating
-  create_custom_string(&t,"echo test-l");
-
-  char buf[256];					//formatting
-  format_from_string(buf,&t);
-
-  write(1,buf,sizeof(uint32_t) + be32toh(t.length));	//writing
-*/
+  		break;
+  	case CLIENT_REQUEST_GET_STDERR:
+		ret = send_stder_req(pipe_req, taskid);
+		assert(ret >= 0);
+  		break;
+ }
 
   return EXIT_SUCCESS;
 
