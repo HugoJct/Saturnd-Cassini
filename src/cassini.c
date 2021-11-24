@@ -111,7 +111,7 @@ int main(int argc, char * argv[]) {
       assert(ret >= 0);
   		break;
   	case CLIENT_REQUEST_GET_TIMES_AND_EXITCODES:
-      ret = send_tm_req(pipe_req, taskid);
+      ret = send_tx_req(pipe_req, taskid);
       assert(ret >= 0);
   		break;
   	case CLIENT_REQUEST_GET_STDOUT:
