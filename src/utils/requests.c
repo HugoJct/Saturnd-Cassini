@@ -55,31 +55,50 @@ int send_tm_req(int fd) {
 	return count == sizeof(op_code) ? 0 : -1;
 }
 
+/*
+ *
+ * quatre fonctions suivantes à la structure sensiblement similaire
+ * seul la macro change en fonction du message à écrire
+ *
+ */
+
 int send_rm_req(int fd, uint64_t taskid) {
+	
+	// traduction en big endian
 	uint16_t op_code = htobe16(CLIENT_REQUEST_REMOVE_TASK);
 	uint64_t big_taskid = htobe64(taskid);
-	// BUFF
+	
+	// création d'un buffer pour préparer le messager écrit sur le pipe 
 	char buf[sizeof(taskid)+sizeof(op_code)]; // 16/8 + 64/8
-	// filling
+	
+	// concaténation des deux paramètres dans le buffer
 	memmove(buf, &op_code, sizeof(op_code));
 	memmove(buf+sizeof(op_code), &big_taskid, sizeof(taskid));
-	// writing
+	
+	// écriture sur le pipe 
 	int count = write(fd, &buf, sizeof(buf));
-	// return
+
+	// retour réussite ou erreur
 	return count > 0 ? 0 : -1;
 }
 
 int send_tx_req(int fd, uint64_t taskid) {
+
+	// traduction en big endian
 	uint16_t op_code = htobe16(CLIENT_REQUEST_GET_TIMES_AND_EXITCODES);
 	uint64_t big_taskid = htobe64(taskid);
-	// BUFF
+	
+	// création d'un buffer pour préparer le messager écrit sur le pipe 
 	char buf[sizeof(taskid)+sizeof(op_code)]; // 16/8 + 64/8
-	// filling
+	
+	// concaténation des deux paramètres dans le buffer
 	memmove(buf, &op_code, sizeof(op_code));
 	memmove(buf+sizeof(op_code), &big_taskid, sizeof(taskid));
-	// writing
+	
+	// écriture sur le pipe 
 	int count = write(fd, &buf, sizeof(buf));
-	// return
+	
+	// retour réussite ou erreur
 	return count > 0 ? 0 : -1;
 }
 
