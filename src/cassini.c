@@ -1,4 +1,5 @@
 #include "cassini.h"
+#include "utils/command_line.h"
 
 const char usage_info[] = "\
    usage: cassini [OPTIONS] -l -> list all tasks\n\
@@ -21,15 +22,15 @@ const char usage_info[] = "\
 
 int main(int argc, char * argv[]) {
   errno = 0;
-  
+
   char * minutes_str = "*";
   char * hours_str = "*";
   char * daysofweek_str = "*";
   char * pipes_directory = NULL;
-  
+
   uint16_t operation = CLIENT_REQUEST_LIST_TASKS;
   uint64_t taskid;
-  
+
   int opt;
   char * strtoull_endp;
   while ((opt = getopt(argc, argv, "hlcqm:H:d:p:r:x:o:e:")) != -1) {
@@ -90,8 +91,20 @@ int main(int argc, char * argv[]) {
   // --------
 
   int pipe_req = open("run/pipes/saturnd-request-pipe",O_WRONLY);
-  int ret;
   assert(pipe_req >= 0);
+  
+  int ret;
+  char **new_argv = (argv+opt); //On se deplace à argv + opt pour obtenir uniquement les arguments de la fonction à traiter par le démon
+  int new_argc = argc-opt; //Le nombre d'arguments que possede notre fonction à traiter par le démon
+
+  /*Exemple
+    ./cassini -m 1,5-10 -c echo -e "toto \n titi"
+                           |
+                      opt s'arrete ici à compter
+
+    donc argv[opt] = "echo" "-e" "toto \n titi"
+    et argc-opt = téléporte le nombre d'arguments à argc - opt
+  */  
   
   switch(operation) {
 	case CLIENT_REQUEST_LIST_TASKS:
@@ -118,16 +131,16 @@ int main(int argc, char * argv[]) {
 		break;
   }
 
-  /*	Example of string building, formatting and writing 
-   
-  struct custom_string t;				//creating 
+  /*	Example of string building, formatting and writing
+
+  struct custom_string t;				//creating
   create_custom_string(&t,"echo test-l");
 
   char buf[256];					//formatting
   format_from_string(buf,&t);
 
-  write(1,buf,sizeof(uint32_t) + be32toh(t.length));	//writing 
-  */
+  write(1,buf,sizeof(uint32_t) + be32toh(t.length));	//writing
+*/
 
   return EXIT_SUCCESS;
 
@@ -136,5 +149,4 @@ int main(int argc, char * argv[]) {
   free(pipes_directory);
   pipes_directory = NULL;
   return EXIT_FAILURE;
-}
-
+  }
