@@ -167,3 +167,20 @@ int timing_string_from_range(char * dest, unsigned int start, unsigned int stop)
   else sprintf_result = sprintf(dest, "%u-%u", start, stop);
   return sprintf_result;
 }
+
+
+int format_from_timing(char *dest, struct timing *t) {
+	
+	uint64_t minutesbe = htobe64(t->minutes);	//write the minutes field
+	memmove(dest,&minutesbe,8);
+	assert(dest != NULL);
+
+	uint32_t hoursbe = htobe32(t->hours);		//write the hours field
+	memmove(dest+8,&hoursbe,4);
+	assert(dest != NULL);
+
+	memmove(dest+12,&t->daysofweek,1);			//write the days field
+	assert(dest != NULL);
+
+	return 13;
+}

@@ -4,7 +4,7 @@
 int send_ls_req(int fd) {
 	uint16_t op_code = htobe16(CLIENT_REQUEST_LIST_TASKS);
 	int count = write(fd,&op_code,sizeof(op_code));
-	return count > 0 ? 0 : -1;	
+	return count == sizeof(op_code) ? 0 : -1;	
 }
 
 int send_cr_req(int fd, char *minutes, char *hours, char *days, int argc, char **argv) {
@@ -31,16 +31,7 @@ int send_cr_req(int fd, char *minutes, char *hours, char *days, int argc, char *
 	memmove(buf,&op_code,2);
 	p+=2;
 
-	uint64_t minutesbe = htobe64(t.minutes);	//write the minutes field
-	memmove(buf+p,&minutesbe,8);
-	p+= 8;
-
-	uint32_t hoursbe = htobe32(t.hours);		//write the hours field
-	memmove(buf+p,&hoursbe,4);
-	p+=4;
-
-	memmove(buf+p,&t.daysofweek,1);			//write the days field
-	p+=1;
+	p+= format_from_timing(buf+p,&t);
 
 	uint32_t arg_count = htobe32(argc);		//write the argc field
 	memmove(buf+p,&arg_count,4);
@@ -55,11 +46,11 @@ int send_cr_req(int fd, char *minutes, char *hours, char *days, int argc, char *
 
 	int count = write(fd,buf,p);					//write the buffer
 
-	return count > 0 ? 0 : -1;
+	return count == p ? 0 : -1;
 }
 
 int send_tm_req(int fd) {
 	uint16_t op_code = htobe16(CLIENT_REQUEST_TERMINATE);
 	int count = write(fd,&op_code,sizeof(op_code));
-	return count > 0 ? 0 : -1;	
+	return count == sizeof(op_code) ? 0 : -1;	
 }
