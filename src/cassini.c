@@ -69,7 +69,7 @@ int main(int argc, char * argv[]) {
       break;
     case 'o':
       operation = CLIENT_REQUEST_GET_STDOUT;
-      taskid = strtoull(optarg, &strtoull_endp, 10);
+      taskid = strtoull(optarg, &strtoull_endp, 10);  
       if (strtoull_endp == optarg || strtoull_endp[0] != '\0') goto error;
       break;
     case 'e':
@@ -92,6 +92,7 @@ int main(int argc, char * argv[]) {
 
   int pipe_req = open("run/pipes/saturnd-request-pipe",O_WRONLY);
   assert(pipe_req >= 0);
+  
   int ret;
   char **new_argv = (argv+opt); //On se deplace à argv + opt pour obtenir uniquement les arguments de la fonction à traiter par le démon
   int new_argc = argc-opt; //Le nombre d'arguments que possede notre fonction à traiter par le démon
@@ -103,27 +104,31 @@ int main(int argc, char * argv[]) {
 
     donc argv[opt] = "echo" "-e" "toto \n titi"
     et argc-opt = téléporte le nombre d'arguments à argc - opt
-  */
-
+  */  
+  
   switch(operation) {
-  	case CLIENT_REQUEST_LIST_TASKS:
-  		ret = send_ls_req(pipe_req);
-  		assert(ret >= 0);
-  		break;
-  	case CLIENT_REQUEST_CREATE_TASK:
-  		break;
-  	case CLIENT_REQUEST_TERMINATE:
-  		ret = send_tm_req(pipe_req);
-  		assert(ret >= 0);
-  		break;
-  	case CLIENT_REQUEST_REMOVE_TASK:
-  		break;
-  	case CLIENT_REQUEST_GET_TIMES_AND_EXITCODES:
-  		break;
-  	case CLIENT_REQUEST_GET_STDOUT:
-  		break;
-  	case CLIENT_REQUEST_GET_STDERR:
-  		break;
+	case CLIENT_REQUEST_LIST_TASKS:
+		ret = send_ls_req(pipe_req);
+		assert(ret >= 0);
+		break;
+	case CLIENT_REQUEST_CREATE_TASK:
+		break;
+	case CLIENT_REQUEST_TERMINATE:
+		ret = send_tm_req(pipe_req);
+		assert(ret >= 0);
+		break;
+	case CLIENT_REQUEST_REMOVE_TASK:
+		break;
+	case CLIENT_REQUEST_GET_TIMES_AND_EXITCODES:
+		break;
+	case CLIENT_REQUEST_GET_STDOUT:
+    ret = send_stdout_req(pipe_req, taskid);
+    assert(ret >= 0);
+		break;
+	case CLIENT_REQUEST_GET_STDERR:
+      ret = send_stder_req(pipe_req, taskid);
+      assert(ret >= 0);
+		break;
   }
 
   /*	Example of string building, formatting and writing
