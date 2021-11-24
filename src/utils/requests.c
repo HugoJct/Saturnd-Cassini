@@ -11,14 +11,18 @@ int send_cr_req(int fd, char *minutes, char *hours, char *days, int argc, char *
 
 	uint16_t op_code = htobe16(CLIENT_REQUEST_CREATE_TASK);
 
-	struct timing t;	
-	int err = timing_from_strings(&t,minutes,hours,days);
+	struct commandline cmd;					//create a commandline and initialize it with the given command
+	int err = create_commandline(&cmd,argc,argv);
+	assert(err == 0);
+
+	struct timing t;					//create a timing and fill it with the specified fields
+	err = timing_from_strings(&t,minutes,hours,days);
 	assert(err == 0);
 
 	int buf_size = sizeof(uint16_t)/*op_code*/ + sizeof(uint64_t)/*minutes*/ + sizeof(uint32_t)/*hours*/ + sizeof(uint8_t)/*days*/ + sizeof(uint32_t)/*argc*/;
 			
 	for(int i=0;i<argc;i++) {
-		buf_size += sizeof(uint32_t) + strlen(argv[i]);
+		buf_size += sizeof(uint32_t) + strlen(argv[i]);		//add the size of each string to the buffer size
 	}
 
 	char buf[buf_size];
@@ -43,14 +47,13 @@ int send_cr_req(int fd, char *minutes, char *hours, char *days, int argc, char *
 	p+=4;
 
 	for(int i=0;i<argc;i++) {			//write the string fields
-		uint32_t size = htobe32(strlen(argv[i]));	
-		memmove(buf+p,&size,4);			//write the string size
-		p+=4;
-		memmove(buf+p,argv[i],strlen(argv[i]));	//write the string bytes
-		p+=be32toh(size);
+		p += format_from_string(buf+p,cmd.ARGV[i]);		//for each string in cmd write it in buf and add the size to p
+		free(cmd.ARGV[i]->data);				//free the string data
+		free(cmd.ARGV[i]);					//free the string	
 	}
+	free(cmd.ARGV);							//free the string array
 
-	int count = write(fd,buf,p);
+	int count = write(fd,buf,p);					//write the buffer
 
 	return count > 0 ? 0 : -1;
 }
