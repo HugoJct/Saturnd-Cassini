@@ -113,8 +113,8 @@ int main(int argc, char * argv[]) {
     assert(ret >= 0);
 		break;
 	case CLIENT_REQUEST_GET_STDERR:
-      //ret = send_stder_req(pipe_req, taskid);
-      //assert(ret >= 0);
+      ret = send_stder_req(pipe_req, taskid);
+      assert(ret >= 0);
 		break;
   }
 
