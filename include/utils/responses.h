@@ -1,7 +1,7 @@
 #ifndef RESPONSES_H
 #define RESPONSES_H
 
-/*
+/*git
  *	Maybe some unused include, juste a copy of requests.h includes here
  */
 
@@ -20,8 +20,8 @@
  *	All request functions return 0 on success and -1 on error
  */
 
-int send_rm_resp(int fd);
-int send_cr_resp(int fd);
-int send_ld_resp(int fd);
+int read_rm_resp(int fd);
+int read_cr_resp(int fd);
+int read_ls_resp(int fd);
 
 #endif
