@@ -1,0 +1,2 @@
+#ifndef DEAMON_RESPONSE_H
+#define DEAMON_RESPONSE_H
