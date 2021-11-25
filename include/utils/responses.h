@@ -1,7 +1,6 @@
 #ifndef RESPONSES_H
 #define RESPONSES_H
 
-#include "deamon-response.h"
 #include <unistd.h>
 #include <endian.h>
 #include <stdlib.h>

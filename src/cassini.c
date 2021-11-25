@@ -86,6 +86,7 @@ int main(int argc, char * argv[]) {
     }
   }
 
+  // ouverture du pipe des requêtes
   int pipe_req = open("run/pipes/saturnd-request-pipe",O_WRONLY);
   assert(pipe_req >= 0);
 
@@ -123,6 +124,10 @@ int main(int argc, char * argv[]) {
 		assert(ret >= 0);
   		break;
  }
+
+  // ouverture du pipe de réponses
+  int pipe_reply = open("run/pipes/saturnd-reply-pipe",O_WRONLY);
+  assert(pipe_reply >= 0); 
 
   return EXIT_SUCCESS;
 
