@@ -129,6 +129,17 @@ int main(int argc, char * argv[]) {
   int pipe_reply = open("run/pipes/saturnd-reply-pipe",O_WRONLY);
   assert(pipe_reply >= 0); 
 
+  switch(operation) {
+    case CLIENT_REQUEST_LIST_TASKS: break;
+    case CLIENT_REQUEST_CREATE_TASK: break;
+    case CLIENT_REQUEST_TERMINATE: break;
+    case CLIENT_REQUEST_REMOVE_TASK: break;
+    case CLIENT_REQUEST_GET_TIMES_AND_EXITCODES: break;
+    case CLIENT_REQUEST_GET_STDOUT: break;
+    case CLIENT_REQUEST_GET_STDERR: break;
+
+  }
+
   return EXIT_SUCCESS;
 
  error:
