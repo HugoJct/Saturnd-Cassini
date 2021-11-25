@@ -86,6 +86,7 @@ int main(int argc, char * argv[]) {
     }
   }
 
+  // ouverture du pipe des requêtes
   int pipe_req = open("run/pipes/saturnd-request-pipe",O_WRONLY);
   assert(pipe_req >= 0);
 
@@ -123,6 +124,34 @@ int main(int argc, char * argv[]) {
 		assert(ret >= 0);
   		break;
  }
+
+  // Fermeture du pipe de requêtes
+  ret = close(pipe_req);
+  assert(ret != -1);
+
+  // ouverture du pipe de réponses
+  int pipe_reply = open("run/pipes/saturnd-reply-pipe",O_RDONLY);
+  assert(pipe_reply >= 0); 
+
+  switch(operation) {
+    case CLIENT_REQUEST_LIST_TASKS: break;
+      ret = read_ls_resp(pipe_reply);
+      assert(ret >= 0);
+      break;
+    case CLIENT_REQUEST_CREATE_TASK: break;
+      ret = read_cr_resp(pipe_reply);
+      assert(ret >= 0);
+      break;
+    case CLIENT_REQUEST_TERMINATE: break;
+    case CLIENT_REQUEST_REMOVE_TASK: 
+      ret = read_rm_resp(pipe_reply);
+      assert(ret >= 0);
+      break;
+    case CLIENT_REQUEST_GET_TIMES_AND_EXITCODES: break;
+    case CLIENT_REQUEST_GET_STDOUT: break;
+    case CLIENT_REQUEST_GET_STDERR: break;
+
+  }
 
   return EXIT_SUCCESS;
 
