@@ -15,6 +15,7 @@
 #include "timing-text-io.h"
 #include <stdio.h>
 #include <string.h>
+#include <time.h>
 
 /*
  *	All request functions return 0 on success and -1 on error
@@ -23,5 +24,6 @@
 int read_rm_resp(int fd);
 int read_cr_resp(int fd);
 int read_ls_resp(int fd);
+int read_tx_resp(int fd);
 
 #endif

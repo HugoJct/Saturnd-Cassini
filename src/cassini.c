@@ -147,7 +147,10 @@ int main(int argc, char * argv[]) {
       ret = read_rm_resp(pipe_reply);
       assert(ret >= 0);
       break;
-    case CLIENT_REQUEST_GET_TIMES_AND_EXITCODES: break;
+    case CLIENT_REQUEST_GET_TIMES_AND_EXITCODES: 
+      ret = read_tx_resp(pipe_reply);
+      assert(ret >= 0);
+      break;
     case CLIENT_REQUEST_GET_STDOUT: break;
     case CLIENT_REQUEST_GET_STDERR: break;
 
