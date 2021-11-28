@@ -153,8 +153,10 @@ int main(int argc, char * argv[]) {
       break;
     case CLIENT_REQUEST_GET_STDOUT: break;
     case CLIENT_REQUEST_GET_STDERR: break;
-
   }
+
+  ret = close(pipe_reply);
+  assert(ret >= 0);
 
   return EXIT_SUCCESS;
 
