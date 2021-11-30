@@ -33,4 +33,10 @@ int format_from_string(char *dest, struct custom_string *str);
  * Returns the number of bytes written on success, -1 on error
  */
 
+void print_custom_string(struct custom_string * string);
+/*
+ * This function display the string located in the
+ * struct custom_string *
+ */
+
 #endif

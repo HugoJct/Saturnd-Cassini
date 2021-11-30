@@ -21,12 +21,14 @@ int read_stderr_resp(int fd) {
 
 	uint16_t code;
 	uint16_t error_code; 
+	struct custom_string output;
 
 	int res = 0;
 	res = read(fd, &code, 2);
 	assert(res == 2);
 	
 	code = be16toh(code);
+	int output_length = be32toh(output.length);
 
 	switch(code) {
 		case 0x4552:	//ERROR
@@ -35,8 +37,15 @@ int read_stderr_resp(int fd) {
 			eval_error_type(fd, error_code);
 			break;
 		case 0x4F4b:	//OK
+			res = read(fd, &output.length, sizeof(uint32_t));
+			assert(res == sizeof(uint32_t));
+			output.data = malloc(output_length);
+			res = read(fd, output.data, output_length);
+			assert(res == output_length);
+			print_custom_string(&output);
 			break;
 	}
+	free(output.data);
 	return 0;
 }
 
