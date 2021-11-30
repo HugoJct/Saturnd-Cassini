@@ -13,12 +13,7 @@ int read_ls_resp(int fd) {
 	return -1;
 }
 
-int read_stdout_resp(int fd) {
-	return -1;
-}
-
-int read_stderr_resp(int fd) {
-
+int read_stderr_stdout_resp(int fd) {
 	uint16_t code;
 	uint16_t error_code; 
 	uint32_t output;

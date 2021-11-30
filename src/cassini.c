@@ -152,11 +152,11 @@ int main(int argc, char * argv[]) {
       assert(ret >= 0);
       break;
     case CLIENT_REQUEST_GET_STDOUT: 
-      ret = read_stdout_resp(pipe_reply);
+      ret = read_stderr_stdout_resp(pipe_reply);
       assert(ret >= 0);
       break;
     case CLIENT_REQUEST_GET_STDERR:
-      ret = read_stderr_resp(pipe_reply);
+      ret = read_stderr_stdout_resp(pipe_reply);
       assert(ret >= 0);
       break;
   }
