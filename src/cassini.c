@@ -100,8 +100,8 @@ int main(int argc, char * argv[]) {
   		assert(ret >= 0);
   		break;
   	case CLIENT_REQUEST_CREATE_TASK:
-		ret = send_cr_req(pipe_req,minutes_str,hours_str,daysofweek_str,new_argc,new_argv);
-		assert(ret >= 0);
+		  ret = send_cr_req(pipe_req,minutes_str,hours_str,daysofweek_str,new_argc,new_argv);
+		  assert(ret >= 0);
   		break;
   	case CLIENT_REQUEST_TERMINATE:
   		ret = send_tm_req(pipe_req);
@@ -131,19 +131,19 @@ int main(int argc, char * argv[]) {
 
   // ouverture du pipe de réponses
   int pipe_reply = open("run/pipes/saturnd-reply-pipe",O_RDONLY);
-  assert(pipe_reply >= 0); 
+  assert(pipe_reply >= 0);
 
   switch(operation) {
-    case CLIENT_REQUEST_LIST_TASKS: break;
+    case CLIENT_REQUEST_LIST_TASKS: 
       ret = read_ls_resp(pipe_reply);
       assert(ret >= 0);
       break;
-    case CLIENT_REQUEST_CREATE_TASK: break;
+    case CLIENT_REQUEST_CREATE_TASK:
       ret = read_cr_resp(pipe_reply);
       assert(ret >= 0);
       break;
     case CLIENT_REQUEST_TERMINATE: break;
-    case CLIENT_REQUEST_REMOVE_TASK: 
+    case CLIENT_REQUEST_REMOVE_TASK:
       ret = read_rm_resp(pipe_reply);
       assert(ret >= 0);
       break;
