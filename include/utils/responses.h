@@ -28,6 +28,6 @@ int read_ls_resp(int fd);
 int read_tx_resp(int fd);
 int read_stderr_resp(int fd);
 int read_stdout_resp(int fd);
-int eval_error_type(int fd, uint16_t error_code);
+void eval_error_type(int fd, uint16_t error_code);
 
 #endif

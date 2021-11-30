@@ -40,7 +40,7 @@ int read_stderr_resp(int fd) {
 	return 0;
 }
 
-int eval_error_type(int fd, uint16_t error_code) {
+void eval_error_type(int fd, uint16_t error_code) {
 	switch(error_code) {
 		// two error cases
 		case 0x4e46: 
@@ -52,7 +52,6 @@ int eval_error_type(int fd, uint16_t error_code) {
 		// OK case 
 		case 0x4F4b: break; 
 	}
-	return 0;
 }
 
 int read_tx_resp(int fd) {
