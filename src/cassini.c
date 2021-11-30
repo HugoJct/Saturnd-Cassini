@@ -151,8 +151,14 @@ int main(int argc, char * argv[]) {
       ret = read_tx_resp(pipe_reply);
       assert(ret >= 0);
       break;
-    case CLIENT_REQUEST_GET_STDOUT: break;
-    case CLIENT_REQUEST_GET_STDERR: break;
+    case CLIENT_REQUEST_GET_STDOUT: 
+      ret = read_stdout_resp(pipe_reply);
+      assert(ret >= 0);
+      break;
+    case CLIENT_REQUEST_GET_STDERR:
+      ret = read_stderr_resp(pipe_reply);
+      assert(ret >= 0);
+      break;
   }
 
   ret = close(pipe_reply);
