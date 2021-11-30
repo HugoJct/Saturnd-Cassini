@@ -16,6 +16,7 @@ int read_ls_resp(int fd) {
 int read_stdout_resp(int fd) {
 	return -1;
 }
+
 int read_stderr_resp(int fd) {
 
 	uint16_t code;
@@ -36,20 +37,16 @@ int read_stderr_resp(int fd) {
 		case 0x4F4b:	//OK
 			break;
 	}
+	return 0;
 }
 
 int eval_error_type(int fd, uint16_t error_code) {
-	int res = 0;
 	switch(error_code) {
 		// two error cases
 		case 0x4e46: 
-			res = read(fd,&error_code,2);	// no task exist with this id
-			assert(res == 2);
 			printf("Error: There is no task with that ID\n");
 			break;
 		case 0x4e52:
-			res = read(fd,&error_code,2);	// task hasn't been executed
-			assert(res == 2);
 			printf("Error: this task hasn't been executed\n");
 			break;
 		// OK case 
