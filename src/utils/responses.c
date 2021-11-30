@@ -9,24 +9,24 @@ int read_rm_resp(int fd) {
 
 int read_cr_resp(int fd) {
 
-	uint16_t REPTYPE;
-	uint64_t TASKID;
-	int count = 0;
-	count += read(fd, &REPTYPE, sizeof(REPTYPE));
-	count += read(fd, &TASKID, sizeof(TASKID));
+	int count;
+	uint16_t reptype;
+	uint64_t taskId;
+	char buf[sizeof(reptype) + sizeof(taskId)];
 
-	if(count != (sizeof(REPTYPE) + sizeof(TASKID))){
+	count = read(fd, &buf, sizeof(reptype)+sizeof(taskId));
+	if(count != (sizeof(reptype) + sizeof(taskId))){
 		return -1; //on a pas tout lu;
 	}
 
-	printf("%d,", be16toh(REPTYPE));
-	printf("%ld", be64toh(TASKID));
+	memmove(&reptype, &buf, sizeof(reptype));
+	memmove(&taskId, &buf+sizeof(reptype), sizeof(taskId));
+
+	printf("%ld", be64toh(taskId));
 	return count;
 }
 
 int read_ls_resp(int fd) {
-
-
 
 		uint16_t REPTYPE;
 		uint32_t NBTASKS;
