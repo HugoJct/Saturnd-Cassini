@@ -11,7 +11,7 @@ int read_cr_resp(int fd) {
 
 	uint16_t REPTYPE;
 	uint64_t TASKID;
-	int count;
+	int count = 0;
 	count += read(fd, &REPTYPE, sizeof(REPTYPE));
 	count += read(fd, &TASKID, sizeof(TASKID));
 
@@ -25,5 +25,39 @@ int read_cr_resp(int fd) {
 }
 
 int read_ls_resp(int fd) {
+
+
+
+		uint16_t REPTYPE;
+		uint32_t NBTASKS;
+
+		read(fd, &REPTYPE, sizeof(REPTYPE));
+		read(fd, &NBTASKS, sizeof(NBTASKS));
+		printf("%d,", be16toh(REPTYPE));
+		printf("%li", be64toh(NBTASKS));
+
+		for(int i = 0; i < be64toh(NBTASKS); i++){
+			uint64_t minutes;
+		  uint32_t hours;
+		  uint8_t daysofweek;
+
+			read(fd, &minutes, sizeof(minutes));
+			read(fd, &hours, sizeof(hours));
+			read(fd, &daysofweek, sizeof(daysofweek));
+
+			uint32_t argc;
+			read(fd, &argc, sizeof(argc));
+
+			printf("%li\n", be64toh(minutes));
+			printf("%i\n", be32toh(hours));
+			printf("%i\n", be16toh(daysofweek));
+
+			for(int ag = 0; ag < be32toh(argc); ag++){
+				uint32_t length;
+				read(fd, &length, sizeof(length));
+				char *data;
+				read(fd, &data, sizeof(data));
+			}
+		}
 	return 0;
 	}
