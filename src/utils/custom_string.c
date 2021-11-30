@@ -21,3 +21,11 @@ int format_from_string(char *dest, struct custom_string *str) {
 		return -1;
 	return sizeof(uint32_t) + be32toh(str->length);
 }
+
+// to print a custom string 
+void print_custom_string(struct custom_string * string) {
+	int string_size = be32toh(string->length);
+	for (int i = 0 ; i<string_size ; i++) {
+		printf("%c", string->data[i]);
+	}
+}

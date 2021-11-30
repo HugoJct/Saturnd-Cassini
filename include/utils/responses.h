@@ -16,6 +16,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <time.h>
+#include <stdint.h>
 
 /*
  *	All response parsing functions should return 0 as the daemon should not send malformed responses
@@ -25,5 +26,7 @@ int read_rm_resp(int fd);
 int read_cr_resp(int fd);
 int read_ls_resp(int fd);
 int read_tx_resp(int fd);
+int read_stderr_stdout_resp(int fd);
+void eval_error_type(int fd, uint16_t error_code);
 
 #endif

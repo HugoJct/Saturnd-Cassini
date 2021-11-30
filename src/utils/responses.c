@@ -13,6 +13,65 @@ int read_ls_resp(int fd) {
 	return -1;
 }
 
+int read_stderr_stdout_resp(int fd) {
+	uint16_t code;
+	uint16_t error_code; 
+	uint32_t output;
+
+	// get REPTYPE
+	int res = 0;
+	res = read(fd, &code, 2);
+	assert(res == 2);
+	
+	// convert code from bigendian
+	code = be16toh(code);
+	int output_length = 0;
+
+	// check what is the good kind of error 
+	switch(code) {
+		case 0x4552:	//ERROR
+			// Read error_code
+			res = read(fd,&error_code,2);
+			assert(res == 2);
+	
+			eval_error_type(fd, error_code);
+	
+			break;
+	
+		case 0x4F4b:	//OK
+			// read output to print
+			res = read(fd, &output, sizeof(uint32_t));
+			// define output length
+			output_length = be32toh(output);
+			assert(res == sizeof(uint32_t));
+			
+			// new buffer to write the output
+			char buf[output_length];
+			
+			res = read(fd, buf, output_length);
+			assert(res == output_length);
+			// write output on STDOUT
+			write(STDOUT_FILENO, buf, output_length);
+			
+			break;
+	}
+	return 0;
+}
+
+void eval_error_type(int fd, uint16_t error_code) {
+	switch(error_code) {
+		// two error cases
+		case 0x4e46: 
+			printf("Error: There is no task with that ID\n");
+			break;
+		case 0x4e52:
+			printf("Error: this task hasn't been executed\n");
+			break;
+		// OK case 
+		case 0x4F4b: break; 
+	}
+}
+
 int read_tx_resp(int fd) {
 	uint16_t code;
 	uint32_t exec_number;
