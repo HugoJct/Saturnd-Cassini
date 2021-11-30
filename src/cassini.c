@@ -99,15 +99,15 @@ int main(int argc, char * argv[]) {
   }
 
   //build the pipes' path 
-  char *request_pipe_path = malloc(strlen(pipes_directory) + strlen("saturnd-request-pipe") + 1);
+  char *request_pipe_path = malloc(strlen(pipes_directory) + strlen("/saturnd-request-pipe") + 1);
   assert(request_pipe_path != NULL);
   strcpy(request_pipe_path,pipes_directory);
-  strcat(request_pipe_path,"saturnd-request-pipe");
+  strcat(request_pipe_path,"/saturnd-request-pipe");
 
-  char *reply_pipe_path = malloc(strlen(pipes_directory) + strlen("saturnd-reply-pipe") + 1);
+  char *reply_pipe_path = malloc(strlen(pipes_directory) + strlen("/saturnd-reply-pipe") + 1);
   assert(reply_pipe_path != NULL);
   strcpy(reply_pipe_path,pipes_directory);
-  strcat(reply_pipe_path,"saturnd-reply-pipe");
+  strcat(reply_pipe_path,"/saturnd-reply-pipe");
 
   //free the directory
   free(pipes_directory);
