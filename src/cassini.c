@@ -176,7 +176,10 @@ int main(int argc, char * argv[]) {
       ret = read_cr_resp(pipe_reply);
       assert(ret >= 0);
       break;
-    case CLIENT_REQUEST_TERMINATE: break;
+    case CLIENT_REQUEST_TERMINATE: 
+      ret = read_tm_resp(pipe_reply);
+      assert(ret >= 0);
+      break;
     case CLIENT_REQUEST_REMOVE_TASK: 
       ret = read_rm_resp(pipe_reply);
       assert(ret >= 0);

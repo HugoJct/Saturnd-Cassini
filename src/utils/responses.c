@@ -72,6 +72,20 @@ void eval_error_type(int fd, uint16_t error_code) {
 	}
 }
 
+int read_tm_resp(int fd) {
+	uint16_t code;
+
+	// get REPTYPE
+	int res = 0;
+	res = read(fd, &code, 2);
+	assert(res == 2);
+
+	printf("---terminate---");
+
+	return 0;
+
+}
+
 int read_tx_resp(int fd) {
 	uint16_t code;
 	uint32_t exec_number;
