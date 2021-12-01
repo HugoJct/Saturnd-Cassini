@@ -86,9 +86,40 @@ int main(int argc, char * argv[]) {
     }
   }
 
+  //		PIPES PATHS FORMATTING
+
+  //if the user did not specify a pipes dir -> use the default one
+  if(pipes_directory == NULL) {
+	char *user = getlogin();
+	pipes_directory = malloc(strlen("/tmp/") + strlen(user) + strlen("/saturnd/pipes/"));
+	assert(pipes_directory != NULL);
+	strcpy(pipes_directory,"/tmp/");
+	strcat(pipes_directory,user);
+	strcat(pipes_directory,"/saturnd/pipes/");
+  }
+
+  //build the pipes' path
+  char *request_pipe_path = malloc(strlen(pipes_directory) + strlen("/saturnd-request-pipe") + 1);
+  assert(request_pipe_path != NULL);
+  strcpy(request_pipe_path,pipes_directory);
+  strcat(request_pipe_path,"/saturnd-request-pipe");
+
+  char *reply_pipe_path = malloc(strlen(pipes_directory) + strlen("/saturnd-reply-pipe") + 1);
+  assert(reply_pipe_path != NULL);
+  strcpy(reply_pipe_path,pipes_directory);
+  strcat(reply_pipe_path,"/saturnd-reply-pipe");
+
+  //free the directory
+  free(pipes_directory);
+
+  //		END OF PIPES PATHS FORMATTING
+
+
+  //		WRITING REQUESTS
   // ouverture du pipe des requêtes
-  int pipe_req = open("run/pipes/saturnd-request-pipe",O_WRONLY);
+  int pipe_req = open(request_pipe_path,O_WRONLY);
   assert(pipe_req >= 0);
+  free(request_pipe_path);
 
   int ret;
   char **new_argv = &argv[optind]; //On initialise new_argv à l'adresse du premier élément de argv qui définit la commande
@@ -128,10 +159,14 @@ int main(int argc, char * argv[]) {
   // Fermeture du pipe de requêtes
   ret = close(pipe_req);
   assert(ret != -1);
+  //		END OF REQUEST WRITING
 
+  //		READING REPLIES
   // ouverture du pipe de réponses
-  int pipe_reply = open("run/pipes/saturnd-reply-pipe",O_RDONLY);
+
+  int pipe_reply = open(reply_pipe_path,O_RDONLY);
   assert(pipe_reply >= 0);
+  free(reply_pipe_path);
 
   switch(operation) {
     case CLIENT_REQUEST_LIST_TASKS:
@@ -147,11 +182,23 @@ int main(int argc, char * argv[]) {
       ret = read_rm_resp(pipe_reply);
       assert(ret >= 0);
       break;
-    case CLIENT_REQUEST_GET_TIMES_AND_EXITCODES: break;
-    case CLIENT_REQUEST_GET_STDOUT: break;
-    case CLIENT_REQUEST_GET_STDERR: break;
-
+    case CLIENT_REQUEST_GET_TIMES_AND_EXITCODES:
+      ret = read_tx_resp(pipe_reply);
+      assert(ret >= 0);
+      break;
+    case CLIENT_REQUEST_GET_STDOUT:
+      ret = read_stderr_stdout_resp(pipe_reply);
+      assert(ret >= 0);
+      break;
+    case CLIENT_REQUEST_GET_STDERR:
+      ret = read_stderr_stdout_resp(pipe_reply);
+      assert(ret >= 0);
+      break;
   }
+
+  ret = close(pipe_reply);
+  assert(ret >= 0);
+  //		END OF REPLIES READING
 
   return EXIT_SUCCESS;
 
