@@ -79,9 +79,6 @@ int read_tm_resp(int fd) {
 	int res = 0;
 	res = read(fd, &code, 2);
 	assert(res == 2);
-
-	printf("---terminate---");
-
 	return 0;
 
 }
