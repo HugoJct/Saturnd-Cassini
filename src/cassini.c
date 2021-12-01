@@ -86,8 +86,8 @@ int main(int argc, char * argv[]) {
     }
   }
 
-  //		PIPES PATHS FORMATTING 
-  
+  //		PIPES PATHS FORMATTING
+
   //if the user did not specify a pipes dir -> use the default one
   if(pipes_directory == NULL) {
 	char *user = getlogin();
@@ -98,7 +98,7 @@ int main(int argc, char * argv[]) {
 	strcat(pipes_directory,"/saturnd/pipes/");
   }
 
-  //build the pipes' path 
+  //build the pipes' path
   char *request_pipe_path = malloc(strlen(pipes_directory) + strlen("/saturnd-request-pipe") + 1);
   assert(request_pipe_path != NULL);
   strcpy(request_pipe_path,pipes_directory);
@@ -112,8 +112,8 @@ int main(int argc, char * argv[]) {
   //free the directory
   free(pipes_directory);
 
-  //		END OF PIPES PATHS FORMATTING 
-  
+  //		END OF PIPES PATHS FORMATTING
+
 
   //		WRITING REQUESTS
   // ouverture du pipe des requêtes
@@ -131,8 +131,8 @@ int main(int argc, char * argv[]) {
   		assert(ret >= 0);
   		break;
   	case CLIENT_REQUEST_CREATE_TASK:
-		ret = send_cr_req(pipe_req,minutes_str,hours_str,daysofweek_str,new_argc,new_argv);
-		assert(ret >= 0);
+		  ret = send_cr_req(pipe_req,minutes_str,hours_str,daysofweek_str,new_argc,new_argv);
+		  assert(ret >= 0);
   		break;
   	case CLIENT_REQUEST_TERMINATE:
   		ret = send_tm_req(pipe_req);
@@ -159,33 +159,34 @@ int main(int argc, char * argv[]) {
   // Fermeture du pipe de requêtes
   ret = close(pipe_req);
   assert(ret != -1);
-  //		END OF REQUEST WRITING 
+  //		END OF REQUEST WRITING
 
-  //		READING REPLIES	
+  //		READING REPLIES
   // ouverture du pipe de réponses
+
   int pipe_reply = open(reply_pipe_path,O_RDONLY);
-  assert(pipe_reply >= 0); 
+  assert(pipe_reply >= 0);
   free(reply_pipe_path);
 
   switch(operation) {
-    case CLIENT_REQUEST_LIST_TASKS: break;
+    case CLIENT_REQUEST_LIST_TASKS:
       ret = read_ls_resp(pipe_reply);
       assert(ret >= 0);
       break;
-    case CLIENT_REQUEST_CREATE_TASK: break;
+    case CLIENT_REQUEST_CREATE_TASK:
       ret = read_cr_resp(pipe_reply);
       assert(ret >= 0);
       break;
     case CLIENT_REQUEST_TERMINATE: break;
-    case CLIENT_REQUEST_REMOVE_TASK: 
+    case CLIENT_REQUEST_REMOVE_TASK:
       ret = read_rm_resp(pipe_reply);
       assert(ret >= 0);
       break;
-    case CLIENT_REQUEST_GET_TIMES_AND_EXITCODES: 
+    case CLIENT_REQUEST_GET_TIMES_AND_EXITCODES:
       ret = read_tx_resp(pipe_reply);
       assert(ret >= 0);
       break;
-    case CLIENT_REQUEST_GET_STDOUT: 
+    case CLIENT_REQUEST_GET_STDOUT:
       ret = read_stderr_stdout_resp(pipe_reply);
       assert(ret >= 0);
       break;
