@@ -134,7 +134,7 @@ int main(int argc, char * argv[]) {
   assert(pipe_reply >= 0);
 
   switch(operation) {
-    case CLIENT_REQUEST_LIST_TASKS: 
+    case CLIENT_REQUEST_LIST_TASKS:
       ret = read_ls_resp(pipe_reply);
       assert(ret >= 0);
       break;
