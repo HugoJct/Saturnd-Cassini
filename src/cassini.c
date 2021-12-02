@@ -139,12 +139,12 @@ int main(int argc, char * argv[]) {
   		assert(ret >= 0);
   		break;
   	case CLIENT_REQUEST_REMOVE_TASK:
-      ret = send_rm_req(pipe_req, taskid);
-      assert(ret >= 0);
+		ret = send_rm_req(pipe_req, taskid);
+		assert(ret >= 0);
   		break;
   	case CLIENT_REQUEST_GET_TIMES_AND_EXITCODES:
-      ret = send_tx_req(pipe_req, taskid);
-      assert(ret >= 0);
+		ret = send_tx_req(pipe_req, taskid);
+		assert(ret >= 0);
   		break;
   	case CLIENT_REQUEST_GET_STDOUT:
 		ret = send_stdout_req(pipe_req, taskid);
@@ -188,10 +188,13 @@ int main(int argc, char * argv[]) {
     case CLIENT_REQUEST_GET_TIMES_AND_EXITCODES:
       ret = read_tx_resp(pipe_reply);
       assert(ret >= 0);
+
+      return ret;
       break;
     case CLIENT_REQUEST_GET_STDOUT:
       ret = read_stderr_stdout_resp(pipe_reply);
       assert(ret >= 0);
+      return ret;
       break;
     case CLIENT_REQUEST_GET_STDERR:
       ret = read_stderr_stdout_resp(pipe_reply);
