@@ -4,7 +4,27 @@
 #include "timing.h"
 
 int read_rm_resp(int fd) {
-	return -1;
+	uint16_t code;
+
+	// get REPTYPE
+	int res = 0;
+	res = read(fd, &code, 2);
+	assert(res == 2);
+
+	// convert code from bigendian
+	code = be16toh(code);
+
+	// check what is the good kind of error
+	switch(code) {
+		case 0x4552:	//ERROR
+			// Print error code (we don't evaluate the error code because the only case is this one)
+			printf("there is no task with that ID");
+			break;
+
+		case 0x4F4b:	//OK
+			break;
+	}
+	return 0;
 }
 
 int read_cr_resp(int fd) {
