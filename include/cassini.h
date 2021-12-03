@@ -14,9 +14,10 @@
 
 #include "client-request.h"
 #include "server-reply.h"
-#include "utils/requests.h"
-#include "utils/responses.h"
+#include "requests.h"
+#include "responses.h"
 #include "utils/custom_string.h"
 #include "timing.h"
+#include "pipes.h"
 
 #endif // CASSINI
