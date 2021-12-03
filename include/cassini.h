@@ -18,6 +18,5 @@
 #include "responses.h"
 #include "utils/custom_string.h"
 #include "timing.h"
-#include "pipes.h"
 
 #endif // CASSINI
