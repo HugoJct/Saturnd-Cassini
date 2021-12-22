@@ -1,10 +1,20 @@
 CC=gcc
 CFLAGS= -g -Wall -I include/
-EXEC=cassini
+BUILD_DIR=build
 
-$(EXEC): src/cassini.o src/utils/requests.o src/utils/custom_string.o src/utils/command_line.o src/timing-text-io.o src/utils/responses.o
+all: create_dirs saturnd cassini
+
+saturnd: $(BUILD_DIR)/saturnd.o
 	$(CC) $(CFLAGS) -o $@ $^
-%.o : %.c
+
+cassini: $(BUILD_DIR)/cassini.o $(BUILD_DIR)/utils/requests.o $(BUILD_DIR)/utils/custom_string.o $(BUILD_DIR)/utils/command_line.o $(BUILD_DIR)/timing-text-io.o $(BUILD_DIR)/utils/responses.o
+	$(CC) $(CFLAGS) -o $@ $^
+
+$(BUILD_DIR)/%.o : src/%.c
 	$(CC) $(CFLAGS) -o $@ -c $<
+
+create_dirs:
+	mkdir -p build/utils/
+
 distclean:
-	@rm -rf *.o src/*.o src/utils/*.o cassini
+	@rm -rf cassini saturnd saturnd.pid build/
