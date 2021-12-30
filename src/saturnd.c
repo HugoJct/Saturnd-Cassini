@@ -2,9 +2,6 @@
 
 int main(int argc, char **argv) {
 	
-	//The informations that can be sent with a request
-	uint16_t opcode = 0;
-
 	daemonize();
 
 	char *username = getlogin();

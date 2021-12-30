@@ -9,6 +9,12 @@ int read_request(int fd) {
 	memcpy(&opcode,buf,2);
 	opcode = be16toh(opcode);
 
+	char *user = getlogin();
+	char req_path[strlen("/tmp/") + strlen(user) + strlen("/saturnd/pipes/saturnd-reply-pipe") + 1];
+	sprintf(req_path,"%s%s%s","/tmp/",user,"/saturnd/pipes/saturnd-reply-pipe");
+
+	int res_fd = open(req_path,O_WRONLY);
+
 	switch(opcode) {
 		case CLIENT_REQUEST_LIST_TASKS:
 			break;
@@ -23,10 +29,12 @@ int read_request(int fd) {
 		case CLIENT_REQUEST_GET_STDERR:
 			break;
 		case CLIENT_REQUEST_TERMINATE:
-			//respond to cassini before terminating
+			send_tm_response(res_fd);
+			close(res_fd);
 			return 1;
 	}
 
+	close(res_fd);
 	return 0;
 }
 
