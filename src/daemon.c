@@ -13,6 +13,9 @@ void daemonize(void) {
 			break;
 	}
 	setsid();				//create a session for the process
+	
+	for(int i=0;i<FOPEN_MAX;i++)
+		close(i);
 
 	int pid = getpid();			//write the process' pid in a file to be able to identify easily
 	int pidFile = open("saturnd.pid",O_WRONLY | O_TRUNC | O_CREAT, 0644);
