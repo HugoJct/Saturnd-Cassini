@@ -5,3 +5,4 @@ run/
 *.backup
 *.o
 *.test
+*.pid

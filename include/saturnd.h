@@ -8,7 +8,18 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <assert.h>
+#include <string.h>
+#include <poll.h>
+#define _GNU_SOURCE      
+#include <signal.h>
+#include <limits.h>
+#include <stdint.h>
+#include <endian.h>
 
-void daemonize(void);
+#include "daemon.h"
+#include "client-request.h"
+#include "utils/command_line.h"
+#include "timing.h"
+#include "utils/read_requests.h"
 
 #endif
