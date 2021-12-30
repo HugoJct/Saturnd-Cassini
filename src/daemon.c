@@ -9,7 +9,7 @@ void daemonize(void) {
 		case 0:		//child
 			break;
 		default:	//parent
-			exit(0);		//let the parent terminate
+			exit(EXIT_SUCCESS);		//let the parent terminate
 			break;
 	}
 	setsid();				//create a session for the process
