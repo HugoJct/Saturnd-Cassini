@@ -1,5 +1,5 @@
-#ifndef REQUESTS_H
-#define REQUESTS_H
+#ifndef SEND_REQUESTS_H
+#define SEND_REQUESTS_H
 
 #include "client-request.h"
 #include <unistd.h>

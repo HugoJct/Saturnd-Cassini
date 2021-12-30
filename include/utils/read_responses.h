@@ -1,5 +1,5 @@
-#ifndef RESPONSES_H
-#define RESPONSES_H
+#ifndef READ_RESPONSES_H
+#define READ_RESPONSES_H
 
 /*git
  *	Maybe some unused include, juste a copy of requests.h includes here
