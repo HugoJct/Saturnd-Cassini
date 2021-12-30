@@ -91,7 +91,7 @@ int main(int argc, char * argv[]) {
   //if the user did not specify a pipes dir -> use the default one
   if(pipes_directory == NULL) {
 	char *user = getlogin();
-	pipes_directory = malloc(strlen("/tmp/") + strlen(user) + strlen("/saturnd/pipes/"));
+	pipes_directory = malloc(strlen("/tmp/") + strlen(user) + strlen("/saturnd/pipes/") + 1);
 	assert(pipes_directory != NULL);
 	strcpy(pipes_directory,"/tmp/");
 	strcat(pipes_directory,user);
