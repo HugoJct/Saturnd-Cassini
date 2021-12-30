@@ -20,5 +20,6 @@
 #include "client-request.h"
 #include "utils/command_line.h"
 #include "timing.h"
+#include "utils/read_requests.h"
 
 #endif

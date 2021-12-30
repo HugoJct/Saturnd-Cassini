@@ -15,45 +15,27 @@ int main(int argc, char **argv) {
 	if(req_fd < 0)
 		goto error;
 
-	struct pollfd pfd;
+	struct pollfd pfd;		//fill the structure needed for poll down below
 	memset(&pfd,0,sizeof(pfd));
 	pfd.fd = req_fd;
 	pfd.events = POLLIN;
 
 	while(1) {
-		poll(&pfd,1,-1);
+		poll(&pfd,1,-1);			//wait for the client to write on the pipe
 		if(pfd.revents & POLLIN) {
-
-			char buf[PIPE_BUF];
-			int ret = read(req_fd,buf,PIPE_BUF);
-			if(ret < 0)
+			int ret = read_request(req_fd);		//read the request written
+			if(ret == -1)				//error detected
 				goto error;
-			memcpy(&opcode,buf,2);	
-			opcode = be16toh(opcode);
-			switch(opcode) {
-				case CLIENT_REQUEST_LIST_TASKS:
-					break;
-				case CLIENT_REQUEST_CREATE_TASK:
-					break;
-				case CLIENT_REQUEST_REMOVE_TASK:
-					break;
-				case CLIENT_REQUEST_GET_TIMES_AND_EXITCODES:
-					break;
-				case CLIENT_REQUEST_GET_STDOUT:
-					break;
-				case CLIENT_REQUEST_GET_STDERR:
-					break;
-				case CLIENT_REQUEST_TERMINATE:
-					goto terminate;
-			}
+			else if (ret == 1)			//daemon kill request detected
+				goto terminate;
 		}
 	}
 
-terminate: 
+terminate:	//if the daemon must terminate
 	close(req_fd);
 	return EXIT_SUCCESS;
 	
-error:
+error:		//if an error in encountered
 	close(req_fd);
 	return EXIT_FAILURE;
 }
