@@ -21,38 +21,19 @@ int read_request(int fd) {
 			break;
 		case CLIENT_REQUEST_CREATE_TASK:
 			{
-				int out = open("saturnd.out",O_WRONLY | O_CREAT | O_TRUNC, 0644);
-				int padding = 15;
-				
-				uint32_t argc;
-				memcpy(&argc,buf+padding,4);
-				padding += 4;
-				argc = be32toh(argc);
+				char **cmd = arg_array_from_buf(buf+15);
+				send_cr_response(res_fd);	//not yet written
+				close(res_fd);
 
-				char **argv;
-				argv = malloc(sizeof(char*) * argc);
-
-				for(int i=0;i<argc;i++) {
-					uint32_t arg_len;
-					memcpy(&arg_len,buf+padding,4);
-					padding += 4;
-					arg_len = be32toh(arg_len);
-					
-					argv[i] = malloc(arg_len+1);
-
-					char arg_tmp[arg_len];
-					memcpy(arg_tmp,buf+padding,arg_len);
-					padding += arg_len;
-					memcpy(argv[i],arg_tmp,arg_len);
+				int pid = fork();
+				switch(pid) {
+					case 0:
+						execvp(cmd[0],cmd);
+						break;
+					default:
+						return pid;	
 				}
-
-				for(int i=0;i<argc;i++)
-					dprintf(out,"%s ",argv[i]);
-				dprintf(out,"\n");
-
-				close(out);
 			}
-			send_cr_response(res_fd);	//not yet written
 			break;
 		case CLIENT_REQUEST_REMOVE_TASK:
 			send_rm_response(res_fd);	//not yet written
