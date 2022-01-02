@@ -3,7 +3,7 @@
 int self_pipe[2];
 
 void handler(int sig) {
-	write(self_pipe[1],"a",1);
+	write(self_pipe[1],"a",1);	//if a child terminated, write a byte into the self pipe to wake poll() up
 }
 
 int main(int argc, char **argv) {
@@ -14,7 +14,7 @@ int main(int argc, char **argv) {
 	char path[strlen("/tmp/") + strlen(username) + strlen("/saturnd/pipes/saturnd-request-pipe") + 1]; 
 	sprintf(path,"%s%s%s","/tmp/",username,"/saturnd/pipes/saturnd-request-pipe");
 
-	int req_fd = open(path,O_RDONLY);
+	int req_fd = open(path,O_RDONLY);		//open the requet pipe
 	if(req_fd < 0)
 		goto error;
 
@@ -48,19 +48,19 @@ int main(int argc, char **argv) {
 
 		if(pfd[1].revents & POLLIN) {		//if a child has terminated
 			char tmp;
-			read(self_pipe[0],&tmp,PIPE_BUF);
-			wait(NULL);
+			read(self_pipe[0],&tmp,PIPE_BUF);	//empty the self pipe
+			wait(NULL);							//collect the child status
 		}
 
 	}
 
-terminate:	//if the daemon must terminate
+terminate:					//if the daemon must terminate
 	close(self_pipe[0]);
 	close(self_pipe[1]);
 	close(req_fd);
 	return EXIT_SUCCESS;
 	
-error:		//if an error in encountered
+error:						//if an error in encountered
 	close(self_pipe[0]);
 	close(self_pipe[1]);
 	close(req_fd);
