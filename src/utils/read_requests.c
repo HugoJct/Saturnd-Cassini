@@ -22,13 +22,15 @@ int read_request(int fd) {
 		case CLIENT_REQUEST_CREATE_TASK:
 			{
 				struct timing t;
-				memcpy(&t,buf,13);
+				memcpy(&t,buf+2,13);
 
 				char **cmd = arg_array_from_buf(buf+15);
 				
 				int task_id = create_task(&t,cmd);	
 
-				send_cr_response(res_fd, task_id);	
+				int ret = send_cr_response(res_fd, task_id);
+				if(ret < 0)
+					return -1;	
 				close(res_fd);
 
 				/*		This part was meant for testing purposes
