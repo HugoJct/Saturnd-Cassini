@@ -15,6 +15,8 @@
 #include "client-request.h"
 #include "utils/send_responses.h"
 #include "utils/command_line.h"
+#include "timing.h"
+#include "tasks.h"
 
 //returns -1 if an error occured, 1 if the daemon must terminate, 0 otherwise
 int read_request(int fd);
