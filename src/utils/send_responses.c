@@ -22,12 +22,15 @@ int send_cr_response(int fd, int task_id){
 int send_rm_response(int fd, int reponse){
 
         int rep;
-        if(reponse == -1){
-         rep = write(&fd, sizeof(SERVER_REPLY_ERROR), SERVER_REPLY_ERROR);
-        }else{
-         rep = write(&fd, sizeof(SERVER_REPLY_OK), SERVER_REPLY_OK);
+        switch (reponse)
+        {
+        case -1:
+                rep = write(&fd, sizeof(SERVER_REPLY_ERROR), SERVER_REPLY_ERROR);
+                break;
+        default:
+                rep = write(&fd, sizeof(SERVER_REPLY_OK), SERVER_REPLY_OK);
+                break;
         }
-        
         return rep;
 }
 

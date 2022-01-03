@@ -18,9 +18,12 @@ struct task {
 	int id;
 	char **cmd;
 	struct timing *exec_times;
+	struct tasks *next;
+	
 };
 
-int create_task(struct timing *t, char **cmd, struct task *exec_times);
+int create_task(struct task *listTaskHead, struct timing *t, char **cmd, struct task *exec_times);
+int delete_task(struct task *listTaskHead, int taskid);
 struct timing *get_current_timing();
 
 #endif

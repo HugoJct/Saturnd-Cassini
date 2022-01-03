@@ -1,6 +1,6 @@
 #include "tasks.h"
 
-int create_task(struct timing *t, char **cmd, struct task *task) {
+int create_task(struct task *listTaskHead, struct timing *t, char **cmd, struct task *task) {
 	int highest = -1;
 		
 	/* This is used to get the highest tasks ID available */
@@ -19,6 +19,7 @@ int create_task(struct timing *t, char **cmd, struct task *task) {
 	task->id = highest+1;
 	task->exec_times = t;
 	task->cmd = cmd;
+	task->next = NULL;
 
 	char path[strlen("tasks/")+sizeof(int)];
 	sprintf(path,"tasks/%d",highest+1);	//formatting directory path
@@ -59,16 +60,47 @@ int create_task(struct timing *t, char **cmd, struct task *task) {
 	close(te_file_fd);
 	
 
+	if(listTaskHead == NULL){
+		//si la liste est vide alors on l'ajoute en premier
+		listTaskHead = task;
+	}else{
+		struct task *courant;
+		while (courant->next != NULL)
+		{
+			if(task->exec_times >  (courant->next)->exec_times ){
+				//si le temps de notre task est supp à la task courante alors 
+				//replace les elements
+				struct task *temporaire = courant;
+				
+				break;
+			}
+			courant->next = task;
+		}
+	}
+
 	return highest+1;
 }
 
-int deletetask(int taskId){
-	
-	//parcour le tableau des task
-	//si on trouve la task -> on trouve son path on supprime
-	//sinon on renvoie -1
-	
-	return 0;
+int delete_task(struct task *listTaskHead, int taskId){
+
+	if(listTaskHead == NULL){
+		return -1; // la liste est vide
+	}else{
+		struct task *courant;
+		while (courant->next != NULL)
+		{
+			struct task *nextTask = courant->next;
+
+			if(nextTask->id == taskId){
+				courant->next = nextTask->next;
+
+					free(nextTask);
+					return 0; // trouvé
+				}
+		}
+
+	}
+	return -1;
 }
 
 
