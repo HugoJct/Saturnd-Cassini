@@ -56,3 +56,26 @@ int create_task(struct timing *t, char **cmd) {
 
 	return highest+1;
 }
+
+struct timing *get_current_timing() {
+
+	int ti = time(NULL);
+	int day = (ti / 86400) % 7 - 3;
+	int hour = (ti / 3600) % 24 + 1;
+	int minute = (ti / 60) % 60;
+
+	uint8_t day_b = 0x00 | (0x01 << day);
+
+	uint32_t hours_b = 0x00000000 | (0x00000001 << hour);
+	hours_b = htobe32(hours_b);
+
+	uint64_t minutes_b = 0x000000000000000 | (0x0000000000000001 << minute);
+	minutes_b = htobe64(minutes_b);
+
+	struct timing *t = malloc(sizeof(struct timing));
+	t->minutes = minutes_b;
+	t->hours = hours_b;
+	t->daysofweek = day_b;
+
+	return t;
+}
