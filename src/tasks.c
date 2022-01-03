@@ -1,6 +1,9 @@
 #include "tasks.h"
 
-int create_task(struct timing *t, char **cmd) {
+int create_task(struct timing *t, char **cmd, struct task *task) {
+
+	task = malloc(sizeof(struct task));
+
 	int highest = -1;
 		
 	/* This is used to get the highest tasks ID available */
@@ -14,6 +17,11 @@ int create_task(struct timing *t, char **cmd) {
 	}
 	closedir(dir);
 	/*		########################### 		*/
+
+	//initializing the struct
+	task->id = highest+1;
+	task->exec_times = t;
+	task->cmd = cmd;
 
 	char path[strlen("tasks/")+sizeof(int)];
 	sprintf(path,"tasks/%d",highest+1);	//formatting directory path
@@ -60,22 +68,49 @@ int create_task(struct timing *t, char **cmd) {
 struct timing *get_current_timing() {
 
 	int ti = time(NULL);
-	int day = (ti / 86400) % 7 - 3;
-	int hour = (ti / 3600) % 24 + 1;
+	int day = (ti / 86400) % 7 - 3;		// -3 because 01/01/1970 was a thursday and we want the day 0 to be sunday
+	int hour = (ti / 3600) % 24 + 1;	// +1 to have UTC+1 time (france)
 	int minute = (ti / 60) % 60;
 
-	uint8_t day_b = 0x00 | (0x01 << day);
+	uint8_t day_b = 0x00 | (0x01 << day);		//setting the days
 
-	uint32_t hours_b = 0x00000000 | (0x00000001 << hour);
+	uint32_t hours_b = 0x00000000 | (0x00000001 << hour);	//setting the hours
 	hours_b = htobe32(hours_b);
 
-	uint64_t minutes_b = 0x000000000000000 | (0x0000000000000001 << minute);
+	uint64_t minutes_b = 0x000000000000000 | (0x0000000000000001 << minute);	//setting the minutes
 	minutes_b = htobe64(minutes_b);
 
-	struct timing *t = malloc(sizeof(struct timing));
+	struct timing *t = malloc(sizeof(struct timing));	//creating the struct
 	t->minutes = minutes_b;
 	t->hours = hours_b;
 	t->daysofweek = day_b;
 
 	return t;
 }
+
+int task_should_run(struct task *ta) {
+	struct timing *now = get_current_timing();
+	int boolean = 0;
+
+	//Testing minutes
+	if((ta->exec_times->minutes & now->minutes) == 0)
+		boolean = 0;
+	else 
+		boolean = 1;	
+
+	//Testing hours
+	if((ta->exec_times->hours & now->hours) == 0)
+		boolean = 0;
+	else
+		boolean = 1;	
+	
+	//Testing days
+	if((ta->exec_times->daysofweek & now->daysofweek) == 0)
+		boolean = 0;
+	else
+		boolean = 1;	
+	
+	free(now);
+	return boolean;
+}
+
