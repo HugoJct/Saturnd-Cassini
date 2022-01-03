@@ -1,9 +1,6 @@
 #include "tasks.h"
 
-int create_task(struct timing *t, char **cmd, struct task *task) {
-
-	task = malloc(sizeof(struct task));
-
+int create_task(struct timing *t, char **cmd) {
 	int highest = -1;
 		
 	/* This is used to get the highest tasks ID available */
@@ -68,19 +65,19 @@ int create_task(struct timing *t, char **cmd, struct task *task) {
 struct timing *get_current_timing() {
 
 	int ti = time(NULL);
-	int day = (ti / 86400) % 7 - 3;		// -3 because 01/01/1970 was a thursday and we want the day 0 to be sunday
-	int hour = (ti / 3600) % 24 + 1;	// +1 to have UTC+1 time (france)
+	int day = (ti / 86400) % 7 - 3;
+	int hour = (ti / 3600) % 24 + 1;
 	int minute = (ti / 60) % 60;
 
-	uint8_t day_b = 0x00 | (0x01 << day);		//setting the days
+	uint8_t day_b = 0x00 | (0x01 << day);
 
-	uint32_t hours_b = 0x00000000 | (0x00000001 << hour);	//setting the hours
+	uint32_t hours_b = 0x00000000 | (0x00000001 << hour);
 	hours_b = htobe32(hours_b);
 
-	uint64_t minutes_b = 0x000000000000000 | (0x0000000000000001 << minute);	//setting the minutes
+	uint64_t minutes_b = 0x000000000000000 | (0x0000000000000001 << minute);
 	minutes_b = htobe64(minutes_b);
 
-	struct timing *t = malloc(sizeof(struct timing));	//creating the struct
+	struct timing *t = malloc(sizeof(struct timing));
 	t->minutes = minutes_b;
 	t->hours = hours_b;
 	t->daysofweek = day_b;
@@ -113,5 +110,3 @@ int task_should_run(struct task *ta) {
 	free(now);
 	return boolean;
 }
-
->>>>>>> develop
