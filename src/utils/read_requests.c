@@ -26,7 +26,8 @@ int read_request(int fd) {
 
 				char **cmd = arg_array_from_buf(buf+15);
 				
-				int task_id = create_task(&t,cmd);	
+				struct task *task = NULL;
+				int task_id = create_task(&t,cmd,task);	
 
 				int ret = send_cr_response(res_fd, task_id);
 				if(ret < 0)

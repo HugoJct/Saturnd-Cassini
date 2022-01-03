@@ -1,6 +1,6 @@
 #include "tasks.h"
 
-int create_task(struct timing *t, char **cmd) {
+int create_task(struct timing *t, char **cmd, struct task *task) {
 	int highest = -1;
 		
 	/* This is used to get the highest tasks ID available */
