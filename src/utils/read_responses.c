@@ -112,7 +112,6 @@ int read_stderr_stdout_resp(int fd) {
 
 			return 1;
 			break;
-
 		case 0x4F4b:	//OK
 			// read output to print
 			res = read(fd, &output, sizeof(uint32_t));
@@ -176,7 +175,6 @@ int read_tx_resp(int fd) {
 			res = read(fd,&error_code,2);				//empty the pipe
 			assert(res == 2);
 			printf("Error: There is no task with that ID\n");	//display an error message
-			goto error;
 			return 1;
 		case 0x4F4b:	//OK
 			break;
@@ -186,7 +184,6 @@ int read_tx_resp(int fd) {
 	res = read(fd,&exec_number,4);		//read the number of time it was ran
 	assert(res == 4);
 	exec_number = be32toh(exec_number);
-	printf("This task was executed %d times: \n",exec_number);	//print an output
 
 	for(int i=0;i<exec_number;i++) {		//for each task
 		res = read(fd,&runtime,8);		//read the time it was ran at
@@ -197,14 +194,10 @@ int read_tx_resp(int fd) {
 
 		time_t time = be64toh(runtime);
 		char buf[25];
-		strftime(buf,25,"- %d/%m/%Y @ %H:%M",localtime(&time));		//format the runtime to something readable
-		printf("%s\n",buf);
-		printf("\tWith exit code: %d\n",exitcode);
 		strftime(buf,25,"%Y-%m-%d %H:%M:%S",localtime(&time));		//format the runtime to something readable
 		printf("%s %d\n",buf, exitcode);
 
-	}
 
-error:
+	}
 	return 0;
 }
