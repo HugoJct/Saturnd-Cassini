@@ -9,10 +9,12 @@
 #include <sys/stat.h>
 #include <unistd.h>
 #include <fcntl.h>
+#include <time.h>
 
 #include "utils/command_line.h"
 #include "timing.h"
 
 int create_task(struct timing *t, char **cmd);
+struct timing *get_current_timing();
 
 #endif
