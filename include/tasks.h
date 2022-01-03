@@ -14,14 +14,7 @@
 #include "utils/command_line.h"
 #include "timing.h"
 
-struct task {
-	int id;
-	char **cmd;
-	struct timing *exec_times;
-};
-
-int create_task(struct timing *t, char **cmd, struct task *task);
+int create_task(struct timing *t, char **cmd);
 struct timing *get_current_timing();
-int task_should_run(struct task *ta);
 
 #endif
