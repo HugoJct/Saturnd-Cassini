@@ -1,6 +1,6 @@
 #include "tasks.h"
 
-int create_task(struct timing *t, char **cmd) {
+int create_task(struct timing *t, char **cmd, struct task *task) {
 	int highest = -1;
 		
 	/* This is used to get the highest tasks ID available */
@@ -14,6 +14,11 @@ int create_task(struct timing *t, char **cmd) {
 	}
 	closedir(dir);
 	/*		########################### 		*/
+
+	//initializing the struct 
+	task->id = highest+1;
+	task->exec_times = t;
+	task->cmd = cmd;
 
 	char path[strlen("tasks/")+sizeof(int)];
 	sprintf(path,"tasks/%d",highest+1);	//formatting directory path
@@ -78,4 +83,30 @@ struct timing *get_current_timing() {
 	t->daysofweek = day_b;
 
 	return t;
+}
+
+int task_should_run(struct task *ta) {
+	struct timing *now = get_current_timing();
+	int boolean = 0;
+
+	//Testing minutes
+	if((ta->exec_times->minutes & now->minutes) == 0)
+		boolean = 0;
+	else 
+		boolean = 1;	
+
+	//Testing hours
+	if((ta->exec_times->hours & now->hours) == 0)
+		boolean = 0;
+	else
+		boolean = 1;	
+	
+	//Testing days
+	if((ta->exec_times->daysofweek & now->daysofweek) == 0)
+		boolean = 0;
+	else
+		boolean = 1;	
+	
+	free(now);
+	return boolean;
 }
