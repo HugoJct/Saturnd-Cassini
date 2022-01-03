@@ -110,6 +110,7 @@ int read_stderr_stdout_resp(int fd) {
 
 			eval_error_type(fd, error_code);
 
+			return 1;
 			break;
 
 		case 0x4F4b:	//OK
@@ -176,6 +177,7 @@ int read_tx_resp(int fd) {
 			assert(res == 2);
 			printf("Error: There is no task with that ID\n");	//display an error message
 			goto error;
+			return 1;
 		case 0x4F4b:	//OK
 			break;
 	}
@@ -193,11 +195,13 @@ int read_tx_resp(int fd) {
 		res = read(fd,&exitcode,2);		//read its exitcode
 		assert(res == 2);
 
-		time_t time = be32toh(runtime);
+		time_t time = be64toh(runtime);
 		char buf[25];
 		strftime(buf,25,"- %d/%m/%Y @ %H:%M",localtime(&time));		//format the runtime to something readable
 		printf("%s\n",buf);
 		printf("\tWith exit code: %d\n",exitcode);
+		strftime(buf,25,"%Y-%m-%d %H:%M:%S",localtime(&time));		//format the runtime to something readable
+		printf("%s %d\n",buf, exitcode);
 
 	}
 
