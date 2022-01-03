@@ -15,6 +15,7 @@
 #include <limits.h>
 #include <stdint.h>
 #include <endian.h>
+#include <sys/wait.h>
 
 #include "daemon.h"
 #include "client-request.h"

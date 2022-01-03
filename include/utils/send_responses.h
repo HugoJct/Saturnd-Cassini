@@ -5,11 +5,12 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <stdint.h>
+#include <string.h>
 
 #include "server-reply.h"
 
 int send_ls_response(int fd);
-int send_cr_response(int fd);
+int send_cr_response(int fd, int task_id);
 int send_rm_response(int fd);
 int send_tx_response(int fd);
 int send_so_response(int fd);

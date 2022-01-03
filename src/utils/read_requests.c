@@ -20,7 +20,29 @@ int read_request(int fd) {
 			send_ls_response(res_fd);	//not yet written
 			break;
 		case CLIENT_REQUEST_CREATE_TASK:
-			send_cr_response(res_fd);	//not yet written
+			{
+				struct timing t;
+				memcpy(&t,buf+2,13);
+
+				char **cmd = arg_array_from_buf(buf+15);
+				
+				int task_id = create_task(&t,cmd);	
+
+				int ret = send_cr_response(res_fd, task_id);
+				if(ret < 0)
+					return -1;	
+				close(res_fd);
+
+				/*		This part was meant for testing purposes
+				int pid = fork();
+				switch(pid) {
+					case 0:
+						execvp(cmd[0],cmd);
+						break;
+					default:
+						break;
+				}	*/
+			}
 			break;
 		case CLIENT_REQUEST_REMOVE_TASK:
 			send_rm_response(res_fd);	//not yet written
