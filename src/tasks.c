@@ -75,7 +75,7 @@ int create_task(struct task *listTaskHead, struct timing *t, char **cmd, struct 
 				//si le temps de notre task est supp à la task courante alors 
 				//replace les elements
 				courant->next = task;
-				task->next = nextTask;
+				task->next = targetTask;
 				break;
 			}
 			courant = courant->next;
@@ -100,7 +100,7 @@ int delete_task(struct task *listTaskHead, int taskId){
 			if(targetTask->id == taskId){
 				courant->next = targetTask->next;
 					//suprimer le fichier
-					int rem = remove(strlen("tasks/") + strlen(targetTask->id));
+					int rem = remove("tasks/" + (targetTask->id));
 					assert(rem >= 0);
 					free(targetTask);
 					return 0; // trouvé

@@ -18,7 +18,7 @@ struct task {
 	int id;
 	char **cmd;
 	struct timing *exec_times;
-	struct tasks *next;
+	struct task *next;
 	
 };
 
