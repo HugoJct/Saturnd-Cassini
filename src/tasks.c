@@ -62,6 +62,16 @@ int create_task(struct timing *t, char **cmd, struct task *task) {
 	return highest+1;
 }
 
+int deletetask(int taskId){
+	
+	//parcour le tableau des task
+	//si on trouve la task -> on trouve son path on supprime
+	//sinon on renvoie -1
+	
+	return 0;
+}
+
+
 struct timing *get_current_timing() {
 
 	int ti = time(NULL);

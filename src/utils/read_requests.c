@@ -46,7 +46,10 @@ int read_request(int fd) {
 			}
 			break;
 		case CLIENT_REQUEST_REMOVE_TASK:
-			send_rm_response(res_fd);	//not yet written
+        	uint64_t taskid;
+			memcpy(&taskid,buf+2,sizeof(taskid));
+        	int reponseTask = deletetask(taskid);		
+			send_rm_response(res_fd, reponseTask);	//not yet written
 			break;
 		case CLIENT_REQUEST_GET_TIMES_AND_EXITCODES:
 			send_tx_response(res_fd);	//not yet written

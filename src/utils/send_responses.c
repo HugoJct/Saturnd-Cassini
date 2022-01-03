@@ -19,9 +19,16 @@ int send_cr_response(int fd, int task_id){
         return 0;
 }
 
-int send_rm_response(int fd){
-        //TODO
-        return 0;
+int send_rm_response(int fd, int reponse){
+
+        int rep;
+        if(reponse == -1){
+         rep = write(&fd, sizeof(SERVER_REPLY_ERROR), SERVER_REPLY_ERROR);
+        }else{
+         rep = write(&fd, sizeof(SERVER_REPLY_OK), SERVER_REPLY_OK);
+        }
+        
+        return rep;
 }
 
 int send_tx_response(int fd){
