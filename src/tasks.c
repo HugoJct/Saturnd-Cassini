@@ -67,15 +67,21 @@ int create_task(struct task *listTaskHead, struct timing *t, char **cmd, struct 
 		struct task *courant;
 		while (courant->next != NULL)
 		{
-			if(task->exec_times >  (courant->next)->exec_times ){
+			struct task *targetTask = courant->next;
+
+			//je sais que la condition n'est pas bonne mais c l'idée
+			if(task->exec_times >  targetTask->exec_times ){
+				
 				//si le temps de notre task est supp à la task courante alors 
 				//replace les elements
-				struct task *temporaire = courant;
-				
+				courant->next = task;
+				task->next = nextTask;
 				break;
 			}
-			courant->next = task;
+			courant = courant->next;
 		}
+		courant->next = task;
+
 	}
 
 	return highest+1;
@@ -89,14 +95,19 @@ int delete_task(struct task *listTaskHead, int taskId){
 		struct task *courant;
 		while (courant->next != NULL)
 		{
-			struct task *nextTask = courant->next;
+			struct task *targetTask = courant->next;
 
-			if(nextTask->id == taskId){
-				courant->next = nextTask->next;
-
-					free(nextTask);
+			if(targetTask->id == taskId){
+				courant->next = targetTask->next;
+					//suprimer le fichier
+					int rem = remove(strlen("tasks/") + strlen(targetTask->id));
+					assert(rem >= 0);
+					free(targetTask);
 					return 0; // trouvé
-				}
+			}
+
+			//on avance
+			courant = courant->next;
 		}
 
 	}

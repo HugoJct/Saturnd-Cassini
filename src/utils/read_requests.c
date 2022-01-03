@@ -31,7 +31,7 @@ int read_request(int fd) {
 				char **cmd = arg_array_from_buf(buf+15);
 				
 				struct task *task = NULL;
-				int task_id = create_task(&t,cmd,task);	
+				int task_id = create_task(&listTaskHead, &t,cmd,task);	
 
 				int ret = send_cr_response(res_fd, task_id);
 				if(ret < 0)
@@ -53,7 +53,7 @@ int read_request(int fd) {
         	uint64_t taskid;
 			memcpy(&taskid,buf+2,sizeof(taskid));
 
-        	int reponseTask = deletetask(taskid);		
+        	int reponseTask = deletetask(&listTaskHead, taskid);		
 			int reponse = send_rm_response(res_fd, reponseTask);	//not yet written
 			
 			assert(reponse >= 0);
