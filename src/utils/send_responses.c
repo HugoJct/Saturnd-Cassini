@@ -29,13 +29,7 @@ int send_tx_response(int fd){
         return 0;
 }
 
-int send_so_response(int fd){
-        //TODO
-        return 0;
-}
-
-int send_se_response(int fd){
-        //TODO
+int send_so_se_response(int fd){
         return 0;
 }
 

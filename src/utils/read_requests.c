@@ -52,10 +52,10 @@ int read_request(int fd) {
 			send_tx_response(res_fd);	//not yet written
 			break;
 		case CLIENT_REQUEST_GET_STDOUT:
-			send_so_response(res_fd);	//not yet written
+			send_so_se_response(res_fd);	//not yet written
 			break;
 		case CLIENT_REQUEST_GET_STDERR:
-			send_se_response(res_fd);	//not yet written
+			send_so_se_response(res_fd);	//not yet written
 			break;
 		case CLIENT_REQUEST_TERMINATE:
 			send_tm_response(res_fd);
