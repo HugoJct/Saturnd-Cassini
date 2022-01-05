@@ -69,11 +69,7 @@ int create_task(struct task *listTaskHead, struct timing *t, char **cmd, struct 
 		{
 			struct task *targetTask = courant->next;
 
-			//je sais que la condition n'est pas bonne mais c l'idée
-			if(task->exec_times >  targetTask->exec_times ){
-				
-				//si le temps de notre task est supp à la task courante alors 
-				//replace les elements
+			if(timing_compare_timing(task, targetTask) == 1){
 				courant->next = task;
 				task->next = targetTask;
 				break;

@@ -29,8 +29,8 @@ int send_rm_response(int fd, int reponse){
                 break;
         default:
                 rep = write(&fd, sizeof(SERVER_REPLY_OK), SERVER_REPLY_OK);
-                break;
-        }
+        break;
+        
         return rep;
 }
 
