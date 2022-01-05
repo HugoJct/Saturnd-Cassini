@@ -12,7 +12,7 @@
 #include <time.h>
 
 #include "utils/command_line.h"
-#include "timing.h"
+#include "timing-text-io.h"
 
 struct task {
 	int id;
@@ -24,6 +24,8 @@ struct task {
 
 int create_task(struct task *listTaskHead, struct timing *t, char **cmd, struct task *exec_times);
 int delete_task(struct task *listTaskHead, int taskid);
+void addListByTiming(struct task *listTaskHead, struct task *task);
+void printList(struct task *listTaskHead);
 struct timing *get_current_timing();
 
 #endif

@@ -20,6 +20,7 @@ int create_task(struct task *listTaskHead, struct timing *t, char **cmd, struct 
 	task->exec_times = t;
 	task->cmd = cmd;
 	task->next = NULL;
+	addListByTiming(listTaskHead, task);
 
 	char path[strlen("tasks/")+sizeof(int)];
 	sprintf(path,"tasks/%d",highest+1);	//formatting directory path
@@ -59,26 +60,7 @@ int create_task(struct task *listTaskHead, struct timing *t, char **cmd, struct 
 	int te_file_fd = open(path_tmp,O_RDONLY | O_CREAT,0644);
 	close(te_file_fd);
 	
-
-	if(listTaskHead == NULL){
-		//si la liste est vide alors on l'ajoute en premier
-		listTaskHead = task;
-	}else{
-		struct task *courant;
-		while (courant->next != NULL)
-		{
-			struct task *targetTask = courant->next;
-
-			if(timing_compare_timing(task, targetTask) == 1){
-				courant->next = task;
-				task->next = targetTask;
-				break;
-			}
-			courant = courant->next;
-		}
-		courant->next = task;
-
-	}
+	printList(listTaskHead);
 
 	return highest+1;
 }
@@ -158,4 +140,43 @@ int task_should_run(struct task *ta) {
 	
 	free(now);
 	return boolean;
+}
+
+void addListByTiming(struct task *listTaskHead, struct task *task){
+	
+	if(listTaskHead == NULL){
+		//si la liste est vide alors on l'ajoute en premier
+		listTaskHead = task;
+	}else{
+		struct task *courant;
+
+		while (courant->next != NULL)
+		{
+			struct task *targetTask = courant->next;
+
+			if(timing_compare_timing(task->exec_times, targetTask->exec_times) == 1){
+				courant->next = task;
+				task->next = targetTask;
+				break;
+			}
+			courant = courant->next;
+		}
+		//dans le cas ou c'est NULL on sort du While on set task
+		courant->next = task;
+	}
+}
+
+void printList(struct task *listTaskHead){
+	
+		struct task *courant;
+
+		while (courant->next != NULL)
+		{
+			struct timing *time = courant->exec_times;
+			char dest [sizeof(time->daysofweek) + sizeof(time->minutes) + sizeof(time->hours)];
+			format_from_timing(dest, time);
+			printf("[task %d | temps %s ", courant->id, dest);
+			courant = courant->next;
+		}
+
 }

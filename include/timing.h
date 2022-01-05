@@ -9,6 +9,4 @@ struct timing {
   uint8_t daysofweek;
 };
 
-int timing_compare_timing(struct timing *t1, struct timing *t2);
-
 #endif // TIMING_H

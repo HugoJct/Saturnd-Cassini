@@ -33,6 +33,7 @@ int send_rm_response(int fd, int reponse){
         
         return rep;
 }
+}
 
 int send_tx_response(int fd){
         //TODO
