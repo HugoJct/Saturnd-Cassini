@@ -16,6 +16,7 @@ int create_task(struct timing *t, char **cmd, struct task *task) {
 	/*		########################### 		*/
 
 	//initializing the struct 
+	task = malloc(sizeof(struct task));
 	task->id = highest+1;
 	task->exec_times = t;
 	task->cmd = cmd;
