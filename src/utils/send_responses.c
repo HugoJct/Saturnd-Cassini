@@ -22,17 +22,19 @@ int send_cr_response(int fd, int task_id){
 int send_rm_response(int fd, int reponse){
 
         int rep;
+	uint16_t ok = htobe16(SERVER_REPLY_OK);
+	uint16_t err = htobe16(SERVER_REPLY_ERROR);
         switch (reponse)
         {
         case -1:
-                rep = write(fd, SERVER_REPLY_ERROR, sizeof(SERVER_REPLY_ERROR));
+                rep = write(fd, &err, 2);
                 break;
         default:
-                rep = write(fd,SERVER_REPLY_OK, sizeof(SERVER_REPLY_OK));
+                rep = write(fd, &ok,2);
                 break;
         
-        return rep;
 }
+        return rep;
 }
 
 int send_tx_response(int fd){

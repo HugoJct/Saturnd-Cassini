@@ -16,6 +16,7 @@ int create_task(struct task *listTaskHead, struct timing *t, char **cmd, struct 
 	/*		########################### 		*/
 
 	//initializing the struct 
+	task = malloc(sizeof(struct task));
 	task->id = highest+1;
 	task->exec_times = t;
 	task->cmd = cmd;
@@ -60,14 +61,14 @@ int create_task(struct task *listTaskHead, struct timing *t, char **cmd, struct 
 	int te_file_fd = open(path_tmp,O_RDONLY | O_CREAT,0644);
 	close(te_file_fd);
 	
-	printList(listTaskHead);
+	//printList(listTaskHead);
 
 	return highest+1;
 }
 
 int delete_task(struct task *listTaskHead, int taskId){
 
-	if(listTaskHead == NULL){		struct task *courant;
+	if(listTaskHead == NULL){
 
 		return -1; // la liste est vide
 	}else{
@@ -145,26 +146,19 @@ int task_should_run(struct task *ta) {
 
 void addListByTiming(struct task *listTaskHead, struct task *task){
 	
-	if(listTaskHead == NULL){
-		//si la liste est vide alors on l'ajoute en premier
-		listTaskHead = task;
-	}else{
 		struct task *courant = listTaskHead;
 
 		while (courant->next != NULL)
 		{
-			struct task *targetTask = courant->next;
 
-			if(timing_compare_timing(task->exec_times, targetTask->exec_times) == 1){
-				courant->next = task;
-				task->next = targetTask;
-				break;
-			}
 			courant = courant->next;
 		}
 		//dans le cas ou c'est NULL on sort du While on set task
 		courant->next = task;
-	}
+
+		int az = open("file", O_WRONLY | O_CREAT | O_TRUNC, 0644);
+		dprintf(az,"ajouted conar\n");
+		close(az);
 }
 
 void printList(struct task *listTaskHead){
@@ -176,9 +170,9 @@ void printList(struct task *listTaskHead){
 			struct timing *time = courant->exec_times;
 			char dest [sizeof(time->daysofweek) + sizeof(time->minutes) + sizeof(time->hours)];
 			format_from_timing(dest, time);
-			int fd = open(1, O_WRONLY | O_RDONLY | O_TRUNC);
+			int fd = open("output", O_WRONLY | O_RDONLY | O_TRUNC);
 		//	char *s = "[task %d | temps %s ", courant->id, dest
-			write(&fd, &courant->id, sizeof(courant->id));
+			write(fd, &courant->id, sizeof(courant->id));
 		//	printf("[task %d | temps %s ", courant->id, dest);
 			courant = courant->next;
 		}
