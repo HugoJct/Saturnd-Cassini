@@ -70,12 +70,12 @@ struct timing *get_current_timing() {
 	int hour = (ti / 3600) % 24 + 1;
 	int minute = (ti / 60) % 60;
 
-	uint8_t day_b = 0x00 | (0x01 << day);
+	uint8_t day_b = (0x01 << day);
 
-	uint32_t hours_b = 0x00000000 | (0x00000001 << hour);
+	uint32_t hours_b = (0x00000001 << hour);
 	hours_b = htobe32(hours_b);
 
-	uint64_t minutes_b = 0x000000000000000 | (0x0000000000000001 << minute);
+	uint64_t minutes_b = (0x0000000000000001 << minute);
 	minutes_b = htobe64(minutes_b);
 
 	struct timing *t = malloc(sizeof(struct timing));
@@ -88,25 +88,19 @@ struct timing *get_current_timing() {
 
 int task_should_run(struct task *ta) {
 	struct timing *now = get_current_timing();
-	int boolean = 0;
+	int boolean = 1;
 
 	//Testing minutes
 	if((ta->exec_times->minutes & now->minutes) == 0)
 		boolean = 0;
-	else 
-		boolean = 1;	
 
 	//Testing hours
 	if((ta->exec_times->hours & now->hours) == 0)
 		boolean = 0;
-	else
-		boolean = 1;	
 	
 	//Testing days
 	if((ta->exec_times->daysofweek & now->daysofweek) == 0)
 		boolean = 0;
-	else
-		boolean = 1;	
 	
 	free(now);
 	return boolean;
