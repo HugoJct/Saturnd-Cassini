@@ -67,10 +67,11 @@ int create_task(struct task *listTaskHead, struct timing *t, char **cmd, struct 
 
 int delete_task(struct task *listTaskHead, int taskId){
 
-	if(listTaskHead == NULL){
+	if(listTaskHead == NULL){		struct task *courant;
+
 		return -1; // la liste est vide
 	}else{
-		struct task *courant;
+		struct task *courant = listTaskHead;
 		while (courant->next != NULL)
 		{
 			struct task *targetTask = courant->next;
@@ -148,7 +149,7 @@ void addListByTiming(struct task *listTaskHead, struct task *task){
 		//si la liste est vide alors on l'ajoute en premier
 		listTaskHead = task;
 	}else{
-		struct task *courant;
+		struct task *courant = listTaskHead;
 
 		while (courant->next != NULL)
 		{
@@ -168,14 +169,17 @@ void addListByTiming(struct task *listTaskHead, struct task *task){
 
 void printList(struct task *listTaskHead){
 	
-		struct task *courant;
+		struct task *courant = listTaskHead;
 
 		while (courant->next != NULL)
 		{
 			struct timing *time = courant->exec_times;
 			char dest [sizeof(time->daysofweek) + sizeof(time->minutes) + sizeof(time->hours)];
 			format_from_timing(dest, time);
-			printf("[task %d | temps %s ", courant->id, dest);
+			int fd = open(1, O_WRONLY | O_RDONLY | O_TRUNC);
+		//	char *s = "[task %d | temps %s ", courant->id, dest
+			write(&fd, &courant->id, sizeof(courant->id));
+		//	printf("[task %d | temps %s ", courant->id, dest);
 			courant = courant->next;
 		}
 

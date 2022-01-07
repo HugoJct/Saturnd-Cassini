@@ -21,6 +21,7 @@ int read_request(int fd) {
 
 	switch(opcode) {
 		case CLIENT_REQUEST_LIST_TASKS:
+
 			send_ls_response(res_fd);	//not yet written
 			break;
 		case CLIENT_REQUEST_CREATE_TASK:
@@ -52,10 +53,8 @@ int read_request(int fd) {
 		case CLIENT_REQUEST_REMOVE_TASK:
         	uint64_t taskid;
 			memcpy(&taskid,buf+2,sizeof(taskid));
-
         	int reponseTask = delete_task(listTaskHead, taskid);		
 			int reponse = send_rm_response(res_fd, reponseTask);	//not yet written
-			
 			assert(reponse >= 0);
 			break;
 		case CLIENT_REQUEST_GET_TIMES_AND_EXITCODES:

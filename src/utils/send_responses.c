@@ -16,7 +16,7 @@ int send_cr_response(int fd, int task_id){
 	int ret = write(fd,buf,10);
 	if(ret != 10)
 		return -1;
-        return 0;
+        return 0; 
 }
 
 int send_rm_response(int fd, int reponse){
@@ -25,11 +25,11 @@ int send_rm_response(int fd, int reponse){
         switch (reponse)
         {
         case -1:
-                rep = write(&fd, sizeof(SERVER_REPLY_ERROR), SERVER_REPLY_ERROR);
+                rep = write(fd, SERVER_REPLY_ERROR, sizeof(SERVER_REPLY_ERROR));
                 break;
         default:
-                rep = write(&fd, sizeof(SERVER_REPLY_OK), SERVER_REPLY_OK);
-        break;
+                rep = write(fd,SERVER_REPLY_OK, sizeof(SERVER_REPLY_OK));
+                break;
         
         return rep;
 }

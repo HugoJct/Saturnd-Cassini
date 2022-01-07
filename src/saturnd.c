@@ -47,7 +47,7 @@ int main(int argc, char **argv) {
 		}
 
 		if(pfd[1].revents & POLLIN) {		//if a child has terminated
-			char tmp;
+			char tmp[PIPE_BUF];
 			read(self_pipe[0],&tmp,PIPE_BUF);	//empty the self pipe
 			wait(NULL);							//collect the child status
 		}
