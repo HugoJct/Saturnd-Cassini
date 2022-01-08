@@ -29,37 +29,35 @@ int send_tx_response(int fd){
         return 0;
 }
 
-int send_so_se_response(int fd) {
-        /* declare a file pointer */
-        char    *buffer;
-        long    numbytes;
-         
+int send_so_se_response(int fd, int fdTask) {
+        /* declare variables */
+        long numbytes;
+        int res;
+        
         /* Get the number of bytes */
-        numbytes = lseek(fd, 0L, SEEK_END);
+        numbytes = lseek(fdTask, 0L, SEEK_END);
          
         /* reset the file position to 
         the beginning of the file */
-        lseek(fd, 0L, SEEK_SET);    
+        lseek(fdTask, 0L, SEEK_SET);    
          
         /* grab sufficient memory for the 
         buffer to hold the file content */
-        buffer = (char*)calloc(numbytes, sizeof(char)); 
+        char buffer[numbytes+2]; 
          
-        /* buffer error */
-        if(buffer == NULL) {
-            return 1;
-        }
-         
-        /* copy all the text into the buffer */
-        int res = read(fd, buffer, numbytes);
+        //TODO : écrire OK dans le buffer pour le cas stdout
+
+        /* copy all the text from task file into the buffer */
+        res = read(fdTask, buffer, numbytes+2);
         
         if (res == -1) {
-                
+                return 1;
         }
 
+        // TODO : écrire le buffer sur le pipe réponse
+
         close(fd);
-        
-        free(buffer);
+        close(fdTask)
 
         return 0;
 }
