@@ -72,33 +72,59 @@ int create_task(struct Liste *listTaskHead, struct timing *t, char **cmd, struct
 }
 
 int delete_task(struct Liste *listTaskHead, int taskId){
+	struct task *courant = listTaskHead->premier;
 
-	if(listTaskHead == NULL){
-
+	if(courant == NULL){
 		return -1; // la liste est vide
 	}else{
-		struct task *courant = listTaskHead->premier;
+		if(courant->id == taskId){
+			deleteFileAndRep(taskId);
+			listTaskHead->premier=courant->next;
+			return 0;
+		}
+
 		while (courant->next != NULL)
 		{
 			struct task *targetTask = courant->next;
 
 			if(targetTask->id == taskId){
-				courant->next = targetTask->next;
 					//suprimer le fichier
-					int rem = remove("tasks/" + (targetTask->id));
-					assert(rem >= 0);
-					free(targetTask);
+					deleteFileAndRep(taskId);
+					courant->next = targetTask->next;
 					return 0; // trouvé
 			}
-
 			//on avance
 			courant = courant->next;
-		}
+		} 
 
 	}
 	return -1;
 }
 
+void deleteFileAndRep(int taskId){
+	char buf[strlen("tasks/") + sizeof(int)];
+	sprintf(buf, "%s%d", "tasks/", taskId);
+	int rem;
+	char tmp[17];
+
+	sprintf(tmp, "%s%s", buf, "/cmd");
+	rem = unlink(tmp);
+
+	sprintf(tmp, "%s%s", buf, "/exec_time");
+	rem = unlink(tmp);
+					
+	sprintf(tmp, "%s%s", buf, "/stderr");
+	rem = unlink(tmp);
+					
+	sprintf(tmp, "%s%s", buf, "/stdout");
+	rem = unlink(tmp);
+					
+	sprintf(tmp, "%s%s", buf, "/times_exit-code");
+	rem = unlink(tmp);
+
+	rem = rmdir(buf); 
+	assert(rem >= 0);
+}
 
 struct timing *get_current_timing() {
 
@@ -150,19 +176,14 @@ int task_should_run(struct task *ta) {
 }
 
 void addList(struct Liste *listTaskHead, struct task *task){
-		struct task *courant = &listTaskHead->premier;
+		struct task *courant = listTaskHead->premier;
 
 		if(courant == NULL) {
 			listTaskHead->premier = task;		
-			printf("[LISTE VIDE] On ajoute un element à la liste | task id %d\n", task->id);
 		}else{
-			while (courant->next != NULL) courant = courant->next;			
-			printf("[LISTE NON VIDE] On ajoute un element à la liste | task id %d\n", task->id);
+			while (courant->next != NULL)courant = courant->next;
 			courant->next = task;
-		}
-		//printList(listTaskHead);
-
-		
+		}		
 }
 
 void printList(struct Liste *listTaskHead){
@@ -175,13 +196,8 @@ void printList(struct Liste *listTaskHead){
 
 		while (courant != NULL)
 		{
-			struct timing *time = courant->exec_times;
-			char dest [sizeof(time->daysofweek) + sizeof(time->minutes) + sizeof(time->hours)];
-			format_from_timing(dest, time);
-			printf("[task %d ]", courant->id);
+			printf("[task %d ] -> ", courant->id);
 			courant = courant->next;
-			printf("mon suivant est %d", courant->id);
-			break;	
 		}
-		printf("Fin de liste \n");
+		printf("| NULL ] Fin de liste \n");
 }

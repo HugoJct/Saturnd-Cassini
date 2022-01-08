@@ -8,7 +8,7 @@ void handler(int sig) {
 
 int main(int argc, char **argv) {
 	
-	//daemonize();
+	daemonize();
 
 	char *username = getlogin();
 	
@@ -36,11 +36,15 @@ int main(int argc, char **argv) {
 
 	sigaction(SIGCHLD,&sa,NULL);			//applying the sigaction
 
+//Pour l'instant je mets la tete de list ici
+	Liste *listTaskHead = malloc(sizeof(Liste));
+	listTaskHead->premier = NULL;
+
 	while(1) {
 		poll(pfd,2,-1);			//wait for the client to write on the pipe
 
 		if(pfd[0].revents & POLLIN) {
-			int ret = read_request(req_fd);		//read the request written
+			int ret = read_request(req_fd, listTaskHead);		//read the request written
 			if(ret == -1)				//error detected
 				goto error;
 			else if (ret == 1)			//daemon kill request detected
@@ -54,11 +58,13 @@ int main(int argc, char **argv) {
 		}
 
 	}
+	
 
 terminate:					//if the daemon must terminate
 	close(self_pipe[0]);
 	close(self_pipe[1]);
 	close(req_fd);
+	free(listTaskHead);
 	printf("terminé");
 	return EXIT_SUCCESS;
 	

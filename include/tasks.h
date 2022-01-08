@@ -10,6 +10,7 @@
 #include <unistd.h>
 #include <fcntl.h>
 #include <time.h>
+#include <unistd.h> 
 
 #include "utils/command_line.h"
 #include "timing-text-io.h"
@@ -33,5 +34,6 @@ int delete_task(struct Liste *listTaskHead, int taskid);
 void addList(struct Liste *listTaskHead, struct task *task);
 void printList(struct Liste *listTaskHead);
 struct timing *get_current_timing();
+void deleteFileAndRep(int taskID);
 
 #endif

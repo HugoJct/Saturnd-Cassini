@@ -1,6 +1,6 @@
 #include "utils/read_requests.h"
 
-int read_request(int fd) {
+int read_request(int fd, Liste *listTaskHead) {
 
 	
 	char buf[PIPE_BUF];
@@ -19,9 +19,6 @@ int read_request(int fd) {
 
 
 
-//Pour l'instant je mets la tete de list ici
-	Liste *listTaskHead = malloc(sizeof(Liste));
-
 	switch(opcode) {
 		case CLIENT_REQUEST_LIST_TASKS:
 
@@ -32,11 +29,7 @@ int read_request(int fd) {
 				
 				struct timing t;
 				memcpy(&t,buf+2,13);
-
-
 				char **cmd = arg_array_from_buf(buf+15);
-				
-
 				struct task *task = NULL;
 				int task_id = create_task(listTaskHead, &t,cmd,task);	
 
@@ -59,10 +52,10 @@ int read_request(int fd) {
 		case CLIENT_REQUEST_REMOVE_TASK: {
 			uint64_t taskid;
 			memcpy(&taskid,buf+2,sizeof(taskid));
-			int reponseTask = delete_task(listTaskHead, taskid);		
+			int reponseTask = delete_task(listTaskHead, be64toh(taskid));		
 			int reponse = send_rm_response(res_fd, reponseTask);	//not yet written
 			assert(reponse >= 0);
-						 }
+					}
 			break;
 		case CLIENT_REQUEST_GET_TIMES_AND_EXITCODES:
 			send_tx_response(res_fd);	//not yet written
@@ -80,7 +73,6 @@ int read_request(int fd) {
 	}
 
 	close(res_fd);
-	free(listTaskHead);
 	return 0;
 }
 
