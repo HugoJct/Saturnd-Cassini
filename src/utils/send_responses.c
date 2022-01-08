@@ -29,7 +29,38 @@ int send_tx_response(int fd){
         return 0;
 }
 
-int send_so_se_response(int fd){
+int send_so_se_response(int fd) {
+        /* declare a file pointer */
+        char    *buffer;
+        long    numbytes;
+         
+        /* Get the number of bytes */
+        numbytes = lseek(fd, 0L, SEEK_END);
+         
+        /* reset the file position to 
+        the beginning of the file */
+        lseek(fd, 0L, SEEK_SET);    
+         
+        /* grab sufficient memory for the 
+        buffer to hold the file content */
+        buffer = (char*)calloc(numbytes, sizeof(char)); 
+         
+        /* buffer error */
+        if(buffer == NULL) {
+            return 1;
+        }
+         
+        /* copy all the text into the buffer */
+        int res = read(fd, buffer, numbytes);
+        
+        if (res == -1) {
+                
+        }
+
+        close(fd);
+        
+        free(buffer);
+
         return 0;
 }
 
