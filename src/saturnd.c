@@ -11,6 +11,7 @@ int main(int argc, char **argv) {
 	daemonize();
 
 	char *username = getlogin();
+	
 	char path[strlen("/tmp/") + strlen(username) + strlen("/saturnd/pipes/saturnd-request-pipe") + 1]; 
 	sprintf(path,"%s%s%s","/tmp/",username,"/saturnd/pipes/saturnd-request-pipe");
 
@@ -35,11 +36,15 @@ int main(int argc, char **argv) {
 
 	sigaction(SIGCHLD,&sa,NULL);			//applying the sigaction
 
+//Pour l'instant je mets la tete de list ici
+	Liste *listTaskHead = malloc(sizeof(Liste));
+	listTaskHead->premier = NULL;
+
 	while(1) {
 		poll(pfd,2,-1);			//wait for the client to write on the pipe
 
 		if(pfd[0].revents & POLLIN) {
-			int ret = read_request(req_fd);		//read the request written
+			int ret = read_request(req_fd, listTaskHead);		//read the request written
 			if(ret == -1)				//error detected
 				goto error;
 			else if (ret == 1)			//daemon kill request detected
@@ -47,22 +52,28 @@ int main(int argc, char **argv) {
 		}
 
 		if(pfd[1].revents & POLLIN) {		//if a child has terminated
-			char tmp;
+			char tmp[PIPE_BUF];
 			read(self_pipe[0],&tmp,PIPE_BUF);	//empty the self pipe
 			wait(NULL);							//collect the child status
 		}
 
 	}
+	
 
 terminate:					//if the daemon must terminate
 	close(self_pipe[0]);
 	close(self_pipe[1]);
 	close(req_fd);
+	free(listTaskHead);
+	printf("terminé");
 	return EXIT_SUCCESS;
 	
 error:						//if an error in encountered
 	close(self_pipe[0]);
 	close(self_pipe[1]);
 	close(req_fd);
+	printf("terminé avec failure");
+
 	return EXIT_FAILURE;
+
 }

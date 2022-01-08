@@ -16,12 +16,25 @@ int send_cr_response(int fd, int task_id){
 	int ret = write(fd,buf,10);
 	if(ret != 10)
 		return -1;
-        return 0;
+        return 0; 
 }
 
-int send_rm_response(int fd){
-        //TODO
-        return 0;
+int send_rm_response(int fd, int reponse){
+
+        int rep;
+	uint16_t ok = htobe16(SERVER_REPLY_OK);
+	uint16_t err = htobe16(SERVER_REPLY_ERROR);
+        switch (reponse)
+        {
+        case -1:
+                rep = write(fd, &err, 2);
+                break;
+        default:
+                rep = write(fd, &ok,2);
+                break;
+        
+}
+        return rep;
 }
 
 int send_tx_response(int fd){

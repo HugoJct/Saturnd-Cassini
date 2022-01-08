@@ -1,25 +1,32 @@
 #include "tasks.h"
 
-int create_task(struct timing *t, char **cmd, struct task *task) {
+int create_task(struct Liste *listTaskHead, struct timing *t, char **cmd, struct task *task) {
 	int highest = -1;
+		
 		
 	/* This is used to get the highest tasks ID available */
 	/*		########################### 		*/
 	DIR *dir = opendir("./tasks/");
 	struct dirent *d;
 
+	
+
 	while((d = readdir(dir)) != NULL) {
 		if(atoi(d->d_name) > highest)
 			highest = atoi(d->d_name);
 	}
+
 	closedir(dir);
 	/*		########################### 		*/
+
 
 	//initializing the struct 
 	task = malloc(sizeof(struct task));
 	task->id = highest+1;
 	task->exec_times = t;
 	task->cmd = cmd;
+	task->next = NULL;
+	addList(listTaskHead, task);
 
 	char path[strlen("tasks/")+sizeof(int)];
 	sprintf(path,"tasks/%d",highest+1);	//formatting directory path
@@ -59,8 +66,64 @@ int create_task(struct timing *t, char **cmd, struct task *task) {
 	int te_file_fd = open(path_tmp,O_RDONLY | O_CREAT,0644);
 	close(te_file_fd);
 	
+	//printList(listTaskHead);
 
 	return highest+1;
+}
+
+int delete_task(struct Liste *listTaskHead, int taskId){
+	struct task *courant = listTaskHead->premier;
+
+	if(courant == NULL){
+		return -1; // la liste est vide
+	}else{
+		if(courant->id == taskId){
+			deleteFileAndRep(taskId);
+			listTaskHead->premier=courant->next;
+			return 0;
+		}
+
+		while (courant->next != NULL)
+		{
+			struct task *targetTask = courant->next;
+
+			if(targetTask->id == taskId){
+					//suprimer le fichier
+					deleteFileAndRep(taskId);
+					courant->next = targetTask->next;
+					return 0; // trouvé
+			}
+			//on avance
+			courant = courant->next;
+		} 
+
+	}
+	return -1;
+}
+
+void deleteFileAndRep(int taskId){
+	char buf[strlen("tasks/") + sizeof(int)];
+	sprintf(buf, "%s%d", "tasks/", taskId);
+	int rem;
+	char tmp[17];
+
+	sprintf(tmp, "%s%s", buf, "/cmd");
+	rem = unlink(tmp);
+
+	sprintf(tmp, "%s%s", buf, "/exec_time");
+	rem = unlink(tmp);
+					
+	sprintf(tmp, "%s%s", buf, "/stderr");
+	rem = unlink(tmp);
+					
+	sprintf(tmp, "%s%s", buf, "/stdout");
+	rem = unlink(tmp);
+					
+	sprintf(tmp, "%s%s", buf, "/times_exit-code");
+	rem = unlink(tmp);
+
+	rem = rmdir(buf); 
+	assert(rem >= 0);
 }
 
 struct timing *get_current_timing() {
@@ -104,4 +167,31 @@ int task_should_run(struct task *ta) {
 	
 	free(now);
 	return boolean;
+}
+
+void addList(struct Liste *listTaskHead, struct task *task){
+		struct task *courant = listTaskHead->premier;
+
+		if(courant == NULL) {
+			listTaskHead->premier = task;		
+		}else{
+			while (courant->next != NULL)courant = courant->next;
+			courant->next = task;
+		}		
+}
+
+void printList(struct Liste *listTaskHead){
+	
+		struct task *courant = listTaskHead->premier;
+		if(courant == NULL){
+			printf("Votre liste est vide \n");
+			return;
+		}
+
+		while (courant != NULL)
+		{
+			printf("[task %d ] -> ", courant->id);
+			courant = courant->next;
+		}
+		printf("| NULL ] Fin de liste \n");
 }
