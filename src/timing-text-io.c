@@ -54,6 +54,19 @@ int timing_field_from_string(uint64_t * dest, const char * string, unsigned int 
 }
 
 
+/* cette fonction compare 2 timing
+ Retourne 0 si false 1 si true */
+int timing_compare_timing(struct timing *t1, struct timing *t2){
+  if(t1->daysofweek >= t2->daysofweek ){
+    if(t1->hours >= t2->hours){
+     if(t1->minutes> t2->minutes){
+       return 0;
+      }
+    }
+  }
+  return 1;
+}
+
 /* Adds range to *dest */
 int timing_range_from_string(uint64_t * dest, const char * string, unsigned int min, unsigned int max) {
   unsigned long int start;

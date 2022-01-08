@@ -19,6 +19,6 @@
 #include "tasks.h"
 
 //returns -1 if an error occured, 1 if the daemon must terminate, 0 otherwise
-int read_request(int fd);
+int read_request(int fd, Liste *liste);
 
 #endif
