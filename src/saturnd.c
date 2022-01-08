@@ -8,9 +8,10 @@ void handler(int sig) {
 
 int main(int argc, char **argv) {
 	
-	daemonize();
+	//daemonize();
 
 	char *username = getlogin();
+	
 	char path[strlen("/tmp/") + strlen(username) + strlen("/saturnd/pipes/saturnd-request-pipe") + 1]; 
 	sprintf(path,"%s%s%s","/tmp/",username,"/saturnd/pipes/saturnd-request-pipe");
 
@@ -58,11 +59,15 @@ terminate:					//if the daemon must terminate
 	close(self_pipe[0]);
 	close(self_pipe[1]);
 	close(req_fd);
+	printf("terminé");
 	return EXIT_SUCCESS;
 	
 error:						//if an error in encountered
 	close(self_pipe[0]);
 	close(self_pipe[1]);
 	close(req_fd);
+	printf("terminé avec failure");
+
 	return EXIT_FAILURE;
+
 }

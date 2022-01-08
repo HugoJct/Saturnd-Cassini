@@ -22,10 +22,16 @@ struct task {
 	
 };
 
-int create_task(struct task *listTaskHead, struct timing *t, char **cmd, struct task *exec_times);
-int delete_task(struct task *listTaskHead, int taskid);
-void addListByTiming(struct task *listTaskHead, struct task *task);
-void printList(struct task *listTaskHead);
+typedef struct Liste Liste;
+struct Liste
+{
+    struct task *premier;
+};
+
+int create_task(struct Liste *listTaskHead, struct timing *t, char **cmd, struct task *exec_times);
+int delete_task(struct Liste *listTaskHead, int taskid);
+void addList(struct Liste *listTaskHead, struct task *task);
+void printList(struct Liste *listTaskHead);
 struct timing *get_current_timing();
 
 #endif

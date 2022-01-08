@@ -1,19 +1,24 @@
 #include "tasks.h"
 
-int create_task(struct task *listTaskHead, struct timing *t, char **cmd, struct task *task) {
+int create_task(struct Liste *listTaskHead, struct timing *t, char **cmd, struct task *task) {
 	int highest = -1;
+		
 		
 	/* This is used to get the highest tasks ID available */
 	/*		########################### 		*/
 	DIR *dir = opendir("./tasks/");
 	struct dirent *d;
 
+	
+
 	while((d = readdir(dir)) != NULL) {
 		if(atoi(d->d_name) > highest)
 			highest = atoi(d->d_name);
 	}
+
 	closedir(dir);
 	/*		########################### 		*/
+
 
 	//initializing the struct 
 	task = malloc(sizeof(struct task));
@@ -21,7 +26,7 @@ int create_task(struct task *listTaskHead, struct timing *t, char **cmd, struct 
 	task->exec_times = t;
 	task->cmd = cmd;
 	task->next = NULL;
-	addListByTiming(listTaskHead, task);
+	addList(listTaskHead, task);
 
 	char path[strlen("tasks/")+sizeof(int)];
 	sprintf(path,"tasks/%d",highest+1);	//formatting directory path
@@ -66,13 +71,13 @@ int create_task(struct task *listTaskHead, struct timing *t, char **cmd, struct 
 	return highest+1;
 }
 
-int delete_task(struct task *listTaskHead, int taskId){
+int delete_task(struct Liste *listTaskHead, int taskId){
 
 	if(listTaskHead == NULL){
 
 		return -1; // la liste est vide
 	}else{
-		struct task *courant = listTaskHead;
+		struct task *courant = listTaskHead->premier;
 		while (courant->next != NULL)
 		{
 			struct task *targetTask = courant->next;
@@ -144,37 +149,39 @@ int task_should_run(struct task *ta) {
 	return boolean;
 }
 
-void addListByTiming(struct task *listTaskHead, struct task *task){
-	
-		struct task *courant = listTaskHead;
+void addList(struct Liste *listTaskHead, struct task *task){
+		struct task *courant = &listTaskHead->premier;
 
-		while (courant->next != NULL)
-		{
-
-			courant = courant->next;
+		if(courant == NULL) {
+			listTaskHead->premier = task;		
+			printf("[LISTE VIDE] On ajoute un element à la liste | task id %d\n", task->id);
+		}else{
+			while (courant->next != NULL) courant = courant->next;			
+			printf("[LISTE NON VIDE] On ajoute un element à la liste | task id %d\n", task->id);
+			courant->next = task;
 		}
-		//dans le cas ou c'est NULL on sort du While on set task
-		courant->next = task;
+		//printList(listTaskHead);
 
-		int az = open("file", O_WRONLY | O_CREAT | O_TRUNC, 0644);
-		dprintf(az,"ajouted conar\n");
-		close(az);
+		
 }
 
-void printList(struct task *listTaskHead){
+void printList(struct Liste *listTaskHead){
 	
-		struct task *courant = listTaskHead;
+		struct task *courant = listTaskHead->premier;
+		if(courant == NULL){
+			printf("Votre liste est vide \n");
+			return;
+		}
 
-		while (courant->next != NULL)
+		while (courant != NULL)
 		{
 			struct timing *time = courant->exec_times;
 			char dest [sizeof(time->daysofweek) + sizeof(time->minutes) + sizeof(time->hours)];
 			format_from_timing(dest, time);
-			int fd = open("output", O_WRONLY | O_RDONLY | O_TRUNC);
-		//	char *s = "[task %d | temps %s ", courant->id, dest
-			write(fd, &courant->id, sizeof(courant->id));
-		//	printf("[task %d | temps %s ", courant->id, dest);
+			printf("[task %d ]", courant->id);
 			courant = courant->next;
+			printf("mon suivant est %d", courant->id);
+			break;	
 		}
-
+		printf("Fin de liste \n");
 }

@@ -1,6 +1,8 @@
 #include "utils/read_requests.h"
 
 int read_request(int fd) {
+
+	
 	char buf[PIPE_BUF];
 	int ret = read(fd,buf,PIPE_BUF);
 	if(ret < 0)
@@ -16,8 +18,9 @@ int read_request(int fd) {
 	int res_fd = open(res_path,O_WRONLY);
 
 
+
 //Pour l'instant je mets la tete de list ici
-	struct task *listTaskHead = NULL;
+	Liste *listTaskHead = malloc(sizeof(Liste));
 
 	switch(opcode) {
 		case CLIENT_REQUEST_LIST_TASKS:
@@ -26,11 +29,14 @@ int read_request(int fd) {
 			break;
 		case CLIENT_REQUEST_CREATE_TASK:
 			{
+				
 				struct timing t;
 				memcpy(&t,buf+2,13);
 
+
 				char **cmd = arg_array_from_buf(buf+15);
 				
+
 				struct task *task = NULL;
 				int task_id = create_task(listTaskHead, &t,cmd,task);	
 
@@ -74,6 +80,7 @@ int read_request(int fd) {
 	}
 
 	close(res_fd);
+	free(listTaskHead);
 	return 0;
 }
 
