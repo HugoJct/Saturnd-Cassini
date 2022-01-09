@@ -8,7 +8,7 @@ void handler(int sig) {
 
 int main(int argc, char **argv) {
 	
-	daemonize();
+	//daemonize();
 
 	char *username = getlogin();
 	

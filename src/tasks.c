@@ -25,7 +25,7 @@ int create_task(struct Liste *listTaskHead, struct timing *t, char **cmd, struct
 	task->id = highest+1;
 	task->exec_times = t;
 	task->cmd = cmd;
-	task->next = NULL;
+	task->next = NULL; 
 	addList(listTaskHead, task);
 
 	char path[strlen("tasks/")+sizeof(int)];
@@ -200,4 +200,17 @@ void printList(struct Liste *listTaskHead){
 			courant = courant->next;
 		}
 		printf("| NULL ] Fin de liste \n");
+}
+
+int numberTask(struct Liste *listTaskHead){
+
+		struct task *courant = listTaskHead->premier;
+		size_t NbTask = 0;
+		if(courant == NULL)return 0;
+		while (courant != NULL)
+		{
+			NbTask++;
+			courant = courant->next;
+		}
+	return NbTask;
 }
