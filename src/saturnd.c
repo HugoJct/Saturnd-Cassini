@@ -8,14 +8,14 @@ void handler(int sig) {
 
 int main(int argc, char **argv) {
 	
-	daemonize();
+	//daemonize();
 
 	char *username = getlogin();
 	
 	char path[strlen("/tmp/") + strlen(username) + strlen("/saturnd/pipes/saturnd-request-pipe") + 1]; 
 	sprintf(path,"%s%s%s","/tmp/",username,"/saturnd/pipes/saturnd-request-pipe");
 
-	int req_fd = open(path,O_RDONLY);		//open the requet pipe
+	int req_fd = open(path,O_RDWR);		//open the requet pipe as reader AND writer to avoid raising POLLHUP with poll
 	if(req_fd < 0)
 		goto error;
 
@@ -41,7 +41,8 @@ int main(int argc, char **argv) {
 	listTaskHead->premier = NULL;
 
 	while(1) {
-		poll(pfd,2,-1);			//wait for the client to write on the pipe
+		int time_remaining = (60 - (time(NULL) % 60)) * 1000;
+		poll(pfd,2,time_remaining);			//wait for the client to write on the pipe
 
 		if(pfd[0].revents & POLLIN) {
 			int ret = read_request(req_fd, listTaskHead);		//read the request written
@@ -52,11 +53,21 @@ int main(int argc, char **argv) {
 		}
 
 		if(pfd[1].revents & POLLIN) {		//if a child has terminated
+			printf("Child terminated\n");
 			char tmp[PIPE_BUF];
 			read(self_pipe[0],&tmp,PIPE_BUF);	//empty the self pipe
 			wait(NULL);							//collect the child status
 		}
 
+		struct task *current = listTaskHead->premier;
+		while(current != NULL) {
+			printf("Checking %d\n",current->id);
+			if(task_should_run(current) && (time(NULL) % 60) == 0) {
+				printf("%d shoud be executed\n",current->id);
+				int task_pid = execute_task(current);
+			}
+			current = current->next;
+		}
 	}
 	
 
@@ -65,15 +76,11 @@ terminate:					//if the daemon must terminate
 	close(self_pipe[1]);
 	close(req_fd);
 	free(listTaskHead);
-	printf("terminé");
 	return EXIT_SUCCESS;
 	
 error:						//if an error in encountered
 	close(self_pipe[0]);
 	close(self_pipe[1]);
 	close(req_fd);
-	printf("terminé avec failure");
-
 	return EXIT_FAILURE;
-
 }

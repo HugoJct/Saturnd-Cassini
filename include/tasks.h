@@ -31,6 +31,8 @@ struct Liste
 
 int create_task(struct Liste *listTaskHead, struct timing *t, char **cmd, struct task *exec_times);
 int delete_task(struct Liste *listTaskHead, int taskid);
+int execute_task(struct task *task);
+int task_should_run(struct task *ta);
 void addList(struct Liste *listTaskHead, struct task *task);
 void printList(struct Liste *listTaskHead);
 struct timing *get_current_timing();

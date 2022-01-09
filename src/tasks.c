@@ -25,6 +25,7 @@ int create_task(struct Liste *listTaskHead, struct timing *t, char **cmd, struct
 	task->id = highest+1;
 	task->exec_times = t;
 	task->cmd = cmd;
+
 	task->next = NULL;
 	addList(listTaskHead, task);
 
@@ -169,6 +170,30 @@ int task_should_run(struct task *ta) {
 	return boolean;
 }
 
+int execute_task(struct task *task) {
+	int pid = fork();
+	if(pid == -1)
+		return -1;
+	if(pid != 0)
+		return pid;
+	
+	char buf[strlen("tasks/") + sizeof(int)];
+	sprintf(buf,"%s%d","tasks/",task->id);
+
+	char tmp[strlen("tasks/") + sizeof(int) + 6];
+	
+	sprintf(tmp,"%s%s",buf,"/stdout");
+	int stdout_fd = open(tmp,O_WRONLY);
+
+	sprintf(tmp,"%s%s",buf,"/stderr");
+	int stderr_fd = open(tmp,O_WRONLY);
+	
+	dup2(stdout_fd,1);
+	dup2(stderr_fd,2);
+
+	execvp(task->cmd[0],task->cmd);
+	return -1;
+}
 void addList(struct Liste *listTaskHead, struct task *task){
 		struct task *courant = listTaskHead->premier;
 
