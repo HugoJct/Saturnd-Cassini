@@ -1,5 +1,6 @@
 #include "utils/send_responses.h"
-
+#include "server-reply.h"
+#include "utils/custom_string.h"
 
 int send_ls_response(int fd){
         //TODO
@@ -32,9 +33,8 @@ int send_tx_response(int fd){
 int send_so_response(int fd, int fdTask) {
         /* declare variables */
         long numbytes;
-        char *end;
         int count;
-        uint16_t *reptype;
+        uint16_t reptype;
         
         /* Get the number of bytes */
         numbytes = lseek(fdTask, 0L, SEEK_END);
@@ -45,24 +45,27 @@ int send_so_response(int fd, int fdTask) {
          
         /* grab sufficient memory for the 
         buffer to hold the file content */
-        char bufferToWrite[numbytes+2]; 
+        char bufferToWrite[numbytes+6]; 
         char bufferOutput[numbytes];
         
-        /* OK str to uint16*/
-        long val = strtol("OK", &end, 10);
-        *reptype = (uint16_t)val;
-
+        /* OK str to uint16 */
+        reptype = htobe16(SERVER_REPLY_OK);
         /* write reptype into response buffer (stdout) */
-        memmove(&reptype, bufferToWrite, sizeof(reptype));
+        memmove(bufferToWrite, &reptype, sizeof(reptype));
 
         /* read file related to fdTask into bufferOutput */
-        read(fdTask, &bufferOutput, numbytes);
+        read(fdTask, bufferOutput, numbytes);
         
+        struct custom_string str;
+        create_custom_string(&str, bufferOutput);
+        count = format_from_string(bufferToWrite+2, &str);
+
+        assert(count != -1);
+
         /* copy all the text from task file into response buffer */
-        memmove(&bufferOutput, bufferToWrite+sizeof(reptype), sizeof(bufferOutput));
 
         // TODO : écrire le buffer sur le pipe réponse
-        count = write(fd, bufferToWrite, numbytes+2);
+        count = write(fd, bufferToWrite, numbytes+6);
         close(fd);
         close(fdTask);
 
