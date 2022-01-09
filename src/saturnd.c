@@ -68,6 +68,9 @@ int main(int argc, char **argv) {
 			}
 			current = current->next;
 		}
+
+		while(time(NULL) % 60 == 0)
+			sleep(1);
 	}
 	
 
