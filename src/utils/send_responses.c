@@ -29,10 +29,12 @@ int send_tx_response(int fd){
         return 0;
 }
 
-int send_so_se_response(int fd, int fdTask) {
+int send_so_response(int fd, int fdTask) {
         /* declare variables */
         long numbytes;
-        int res;
+        char *end;
+        int count;
+        uint16_t *reptype;
         
         /* Get the number of bytes */
         numbytes = lseek(fdTask, 0L, SEEK_END);
@@ -43,22 +45,31 @@ int send_so_se_response(int fd, int fdTask) {
          
         /* grab sufficient memory for the 
         buffer to hold the file content */
-        char buffer[numbytes+2]; 
-         
-        //TODO : écrire OK dans le buffer pour le cas stdout
-
-        /* copy all the text from task file into the buffer */
-        res = read(fdTask, buffer, numbytes+2);
+        char bufferToWrite[numbytes+2]; 
+        char bufferOutput[numbytes];
         
-        if (res == -1) {
-                return 1;
-        }
+        /* OK str to uint16*/
+        long val = strtol("OK", &end, 10);
+        *reptype = (uint16_t)val;
+
+        /* write reptype into response buffer (stdout) */
+        memmove(&reptype, bufferToWrite, sizeof(reptype));
+
+        /* read file related to fdTask into bufferOutput */
+        read(fdTask, &bufferOutput, numbytes);
+        
+        /* copy all the text from task file into response buffer */
+        memmove(&bufferOutput, bufferToWrite+sizeof(reptype), sizeof(bufferOutput));
 
         // TODO : écrire le buffer sur le pipe réponse
-
+        count = write(fd, bufferToWrite, numbytes+2);
         close(fd);
-        close(fdTask)
+        close(fdTask);
 
+        return count > 0 ? 0 : -1;
+}
+
+int send_se_response(int fd, int fdTask) {
         return 0;
 }
 
