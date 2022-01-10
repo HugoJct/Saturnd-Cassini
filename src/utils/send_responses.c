@@ -72,8 +72,29 @@ int send_so_response(int fd, int fdTask) {
         return count > 0 ? 0 : -1;
 }
 
-int send_se_response(int fd, int fdTask) {
-        return 0;
+int send_se_response(int fd, char task_path) {
+        /* declare variables */
+        char buffer[4];
+        int count;
+        uint16_t reptype;
+        uint16_t repErr;
+        reptype = htobe16(SERVER_REPLY_ERROR);
+
+        DIR *dir = opendir(&task_path);
+
+        if (dir != NULL) {
+                repErr = htobe16(SERVER_REPLY_ERROR_NEVER_RUN);
+        } else {
+                repErr = htobe16(SERVER_REPLY_ERROR_NOT_FOUND);
+        }
+
+        memmove(buffer, &reptype, sizeof(reptype));
+        memmove(buffer+sizeof(reptype), &repErr, sizeof(repErr));
+        count = write(fd, &buffer, sizeof(buffer));
+
+        close(fd);
+
+        return count > 0 ? 0 : -1;
 }
 
 int send_tm_response(int fd) {
