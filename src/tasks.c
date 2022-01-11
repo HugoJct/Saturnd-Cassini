@@ -303,3 +303,16 @@ void printList(struct Liste *listTaskHead){
 		}
 		printf("| NULL ] Fin de liste \n");
 }
+
+int numberTask(struct Liste *listTaskHead){
+
+		struct task *courant = listTaskHead->premier;
+		size_t NbTask = 0;
+		if(courant == NULL)return 0;
+		while (courant != NULL)
+		{
+			NbTask++;
+			courant = courant->next;
+		}
+	return NbTask;
+}

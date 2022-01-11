@@ -9,9 +9,13 @@ int send_ls_response(int fd, struct Liste *listTaskHead){
 	write(fd, &reptype, 2);
         write(fd, &nbtasks, 4);
 
+        printf("oui\n");
         struct task *courant = listTaskHead->premier;
+        printf("oui 1 \n");
+
 	while (courant != NULL){
 	 uint64_t taskId = courant->id;
+        printf("oui non ed \n");
 
          struct timing *timing = courant->exec_times;
 	 uint64_t minutes =  timing->minutes;
@@ -22,15 +26,25 @@ int send_ls_response(int fd, struct Liste *listTaskHead){
 	 write(fd, &minutes, sizeof(minutes));
 	 write(fd, &hours, sizeof(hours));
          write(fd, &daysofweek, sizeof(daysofweek));
+        printf("oui non edzdzdzd \n");
 
 	 char **cmd = courant->cmd;
+        printf("oui non edzdzdzddzzddzsvrf2 \n");
 
-	 for(int ag = 0; ag < sizeof(cmd); ag++){
+        printf("taille cmd %ld", sizeof(cmd));
+	 for(int ag = 0; ag < 1; ag++){
+           printf("on entre pour %d\n", ag);
 	   uint32_t length = strlen(cmd[ag]);
-           write(fd, &length, sizeof(length));
-           write(fd, cmd[ag], be32toh(length));
+           printf("taille %d\n", length);
+           int rep;
+           rep = write(fd, &length, sizeof(length));
+           printf("rep %d \n", rep);
+           rep = write(fd, &cmd[ag], be32toh(length));
+           printf("rep  %d \n", rep);
 	}
+        printf("oui non \n");
 
+        courant = courant->next;
         } 
         return 0;
 }
