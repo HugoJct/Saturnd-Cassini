@@ -159,7 +159,15 @@ void from_disk_to_memory(struct Liste *listTaskHead){
 		int idDir = atoi(d->d_name);
 		if(idDir > 0){
 			taskDir->id = (atoi(d->d_name));
-			//taskDir->cmd = arg_array_from_buf(buffCmd);
+
+			int fd = open("./tasks/", O_RDONLY);
+			int count = lseek(fd, 0, SEEK_END);
+			char buffCmd[count];
+			lseek(fd, 0, SEEK_SET);
+			int countRead = read(fd, buffCmd, count);
+			taskDir->cmd = arg_array_from_buf(buffCmd);
+			
+			
 			//taskDir->exec_times = 
 			addList(listTaskHead, taskDir);
 		}
