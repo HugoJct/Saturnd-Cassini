@@ -53,5 +53,6 @@ void addList(struct Liste *listTaskHead, struct task *task);
 void printList(struct Liste *listTaskHead);
 struct timing *get_current_timing();
 void deleteFileAndRep(int taskID);
+int task_exist(struct Liste *listTaskHead, int taskId);
 
 #endif

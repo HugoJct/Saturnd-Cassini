@@ -37,9 +37,38 @@ int send_rm_response(int fd, int reponse){
         return rep;
 }
 
-int send_tx_response(int fd){
-        //TODO
-        return 0;
+int     send_tx_response(int fd, int reponse, int task_id){
+         
+        int rep;
+        switch (reponse)
+        {
+        case -1:
+                uint16_t err = htobe16(SERVER_REPLY_ERROR);
+	        uint16_t nf = htobe16(SERVER_REPLY_ERROR_NOT_FOUND);
+                char buf[sizeof(err) + sizeof(nf)];
+                memmove(buf, &err, 2);
+                memmove(buf+2, &nf, 2);
+                rep = write(fd, &buf, 4);
+                break;
+        default:
+        	uint16_t ok = htobe16(SERVER_REPLY_OK); 
+                //path
+                char path[strlen("tasks/")+sizeof(int)+strlen("//times_exit-code")+1];
+                sprintf(path,"tasks/%d/%s", task_id, "times_exit-code");	
+
+	        int fd_file = open(path, O_RDONLY);	//creating file + opening it
+                int length = lseek(fd_file, 0, SEEK_END);//donne la taille du fichier
+                lseek(fd_file, 0, SEEK_SET);
+
+                //buffer
+                char buff[length];
+                read(fd_file, buff, length);
+                rep = write(fd, &ok, 2);
+                rep = write(fd, buff, length);
+                close(fd);
+                break;
+        }       
+        return rep;
 }
 
 int send_so_response(int fd){
