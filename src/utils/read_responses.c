@@ -125,7 +125,7 @@ int read_stderr_stdout_resp(int fd) {
 			char buf[output_length];
 
 			res = read(fd, buf, output_length);
-			assert(res == output_length);
+			//assert(res == output_length);
 			// write output on STDOUT
 			write(STDOUT_FILENO, buf, output_length);
 

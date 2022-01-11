@@ -60,12 +60,14 @@ int send_so_response(int fd, int fdTask) {
         create_custom_string(&str, bufferOutput);
         count = format_from_string(bufferToWrite+2, &str);
 
+        printf("%d\n", count);
+        printf("%s\n", bufferToWrite);
         assert(count != -1);
 
         /* copy all the text from task file into response buffer */
 
         // TODO : écrire le buffer sur le pipe réponse
-        count = write(fd, bufferToWrite, numbytes+6);
+        count = write(fd, bufferToWrite, sizeof(bufferToWrite));
         close(fd);
         close(fdTask);
 
@@ -82,11 +84,32 @@ int send_se_response(int fd, char *task_path) {
 
         DIR *dir = opendir(task_path);
 
+        /* get stderr path */
+        char task_path_err[sizeof(task_path) + strlen("/stderr") + 1];
+        sprintf(task_path_err,"%s%s",task_path,"/stderr");
+
+        /* get exitcode path */
+        char task_path_ex[sizeof(task_path) + strlen("/exitcode") + 1];
+        sprintf(task_path_ex,"%s%s",task_path,"/exitcode");
+
         if (dir != NULL) {
-                repErr = htobe16(SERVER_REPLY_ERROR_NEVER_RUN);
-                printf("found\n");
+                /* try to open stderr file */
+                int task_fd = open(task_path_err, O_RDONLY);
+                /* try to open exitcode file */
+                int exit_code_fd = open(task_path_ex, O_RDONLY);
+                /* get exitcode file length */
+                long numbytes = lseek(exit_code_fd, 0L, SEEK_END);
+                lseek(exit_code_fd, 0L, SEEK_SET);
+                /* fill exitcode buffer with related values */
+                char buff_exit[numbytes];
+                read(exit_code_fd, buff_exit, numbytes);
+
+                if (task_fd > -1 && atoi(buff_exit) != 0) {
+                        return send_so_response(fd, task_fd); 
+                } else {
+                        repErr = htobe16(SERVER_REPLY_ERROR_NEVER_RUN);
+                }
         } else {
-                printf("not found\n");
                 repErr = htobe16(SERVER_REPLY_ERROR_NOT_FOUND);
         }
         char buffer[sizeof(reptype)+sizeof(repErr)];

@@ -7,6 +7,7 @@
 #include <stdint.h>
 #include <string.h>
 #include <dirent.h>
+#include <fcntl.h>
 
 #include "server-reply.h"
 
