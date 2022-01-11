@@ -40,6 +40,9 @@ int main(int argc, char **argv) {
 	Liste *listTaskHead = malloc(sizeof(Liste));
 	listTaskHead->premier = NULL;
 
+	struct LaunchedTaskHead *lth = malloc(sizeof(struct LaunchedTaskHead));
+	lth->head = NULL;
+
 	while(1) {
 		int time_remaining = (60 - (time(NULL) % 60)) * 1000;
 		poll(pfd,2,time_remaining);			//wait for the client to write on the pipe
@@ -53,18 +56,35 @@ int main(int argc, char **argv) {
 		}
 
 		if(pfd[1].revents & POLLIN) {		//if a child has terminated
-			printf("Child terminated\n");
 			char tmp[PIPE_BUF];
 			read(self_pipe[0],&tmp,PIPE_BUF);	//empty the self pipe
-			wait(NULL);							//collect the child status
+
+			struct LaunchedTask *current = lth->head;
+			while(current != NULL) {
+				int status;
+				int zombie = waitpid(current->pid,&status,WNOHANG);
+				
+				if(zombie) {
+					removeLaunchedTask(lth,current);
+					current = lth->head;
+					continue;
+				}
+				uint8_t return_value = WIFEXITED(status) ? WEXITSTATUS(status) : 0xFFFF;
+				current = current->next;
+			}
 		}
 
 		struct task *current = listTaskHead->premier;
 		while(current != NULL) {
-			printf("Checking %d\n",current->id);
 			if(task_should_run(current) && (time(NULL) % 60) == 0) {
-				printf("%d shoud be executed\n",current->id);
 				int task_pid = execute_task(current);
+
+				struct LaunchedTask *t = malloc(sizeof(struct LaunchedTask));
+				t->id = current->id;
+				t->pid = task_pid;
+				t->next = NULL;
+
+				addLaunchedTask(lth,t);
 			}
 			current = current->next;
 		}

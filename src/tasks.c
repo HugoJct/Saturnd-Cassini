@@ -194,6 +194,52 @@ int execute_task(struct task *task) {
 	execvp(task->cmd[0],task->cmd);
 	return -1;
 }
+
+void addLaunchedTask(struct LaunchedTaskHead *h, struct LaunchedTask *t) {
+	struct LaunchedTask *current = h->head;
+
+	if(current == NULL) {
+		h->head = t;
+	} else {
+		while(current->next != NULL)
+			current = current->next;
+		current-> next = t;
+	}
+}
+
+void removeLaunchedTask(struct LaunchedTaskHead *h, struct LaunchedTask *t) {
+	struct LaunchedTask *current = h->head;
+
+	if(current == t) {
+		h->head = t->next;
+		free(t);
+		return;
+	}
+
+	while(current->next != t) {
+		current = current->next;
+	}
+	struct LaunchedTask *found = current->next;
+	current->next = current->next->next;
+	free(found);
+}
+
+struct task *getTaskByID(struct Liste *h, int id) {
+	struct task *t = h->premier;
+	while(t->id != id)
+		t = t->next;
+	return t;
+}
+
+void printLaunchedTasks(struct LaunchedTaskHead *h) {
+	struct LaunchedTask *current = h->head;
+	while(current != NULL) {
+		printf("%d -> ",current->id);
+		current = current->next;
+	}
+	printf("NULL");
+}
+
 void addList(struct Liste *listTaskHead, struct task *task){
 		struct task *courant = listTaskHead->premier;
 
