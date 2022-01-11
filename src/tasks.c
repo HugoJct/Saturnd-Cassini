@@ -160,6 +160,7 @@ void from_disk_to_memory(struct Liste *listTaskHead){
 		if(idDir > 0){
 			taskDir->id = (atoi(d->d_name));
 
+			//Cmd 
 			int fd = open("./tasks/", O_RDONLY);
 			int count = lseek(fd, 0, SEEK_END);
 			char buffCmd[count];
@@ -167,8 +168,23 @@ void from_disk_to_memory(struct Liste *listTaskHead){
 			int countRead = read(fd, buffCmd, count);
 			taskDir->cmd = arg_array_from_buf(buffCmd);
 			
+			//Exce times
+
+			fd = open("/tasks/", O_RDONLY);
 			
-			//taskDir->exec_times = 
+			uint64_t minutes;
+  			uint32_t hours;
+  			uint8_t daysofweek;
+			
+			read(fd, &minutes, sizeof(minutes));
+			read(fd, &hours, sizeof(hours));
+			read(fd, &daysofweek, sizeof(daysofweek));
+			
+			struct timing *exec_times = malloc(sizeof(struct timing));
+			exec_times->daysofweek = daysofweek;
+			exec_times->hours = hours;
+			exec_times->minutes = minutes;
+			taskDir->exec_times = exec_times; 
 			addList(listTaskHead, taskDir);
 		}
 	}
