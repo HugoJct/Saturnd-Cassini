@@ -60,39 +60,43 @@ int main(int argc, char **argv) {
 			read(self_pipe[0],&tmp,PIPE_BUF);	//empty the self pipe
 
 			struct LaunchedTask *current = lth->head;
-			while(current != NULL) {
-				int status;
-				int zombie = waitpid(current->pid,&status,WNOHANG);
-				uint8_t return_value = WIFEXITED(status) ? WEXITSTATUS(status) : 0xFFFF;
-				
-				if(zombie) {
-					struct task *tmp = getTaskByID(listTaskHead,current->id);
-					tmp->canRun = 1;
-					removeLaunchedTask(lth,current);
-					current = lth->head;
-					continue;
+			while(current != NULL) {							//for all launched tasks
+				int *status = NULL;
+				int zombie = waitpid(current->pid,status,WNOHANG);			//check if they have exited
+				uint8_t return_value = 0; 
+				if(status != NULL && WIFEXITED(*status)) {				//if they have exited write their exit code on disk
+					return_value = WEXITSTATUS(*status);
+					writeTaskExitCode(return_value,current->id);	
 				}
+				
+				if(zombie) {								//if the task terminated
+					struct task *tmp = getTaskByID(listTaskHead,current->id);
+					tmp->canRun = 1;						//allow to run on the next minute
+					removeLaunchedTask(lth,current);				//remove it from the launched tasks
+					current = lth->head;
+					continue;							//contiue browsing
+				}		
 				current = current->next;
 			}
 		}
 
 		struct task *current = listTaskHead->premier;
-		while(current != NULL) {
-			if(task_should_run(current) && (time(NULL) % 60) == 0 && current->canRun) {
-				int task_pid = execute_task(current);
+		while(current != NULL) {									//for all taskss
+			if(task_should_run(current) && (time(NULL) % 60) == 0 && current->canRun) {		//if they can and should run
+				int task_pid = execute_task(current);						//execute it
 
-				struct LaunchedTask *t = malloc(sizeof(struct LaunchedTask));
+				struct LaunchedTask *t = malloc(sizeof(struct LaunchedTask));			
 				t->id = current->id;
 				t->pid = task_pid;
 				t->next = NULL;
 
-				addLaunchedTask(lth,t);
-				current->canRun = 0;
+				addLaunchedTask(lth,t);								//add it to the list
+				current->canRun = 0;								//forbid it to run on the next minute
 			}
 			current = current->next;
 		}
 
-		while(time(NULL) % 60 == 0)
+		while(time(NULL) % 60 == 0)									//wait until the next second	(probably not the cleanest way to do it)
 			sleep(1);
 	}
 	

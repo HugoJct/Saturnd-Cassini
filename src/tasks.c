@@ -65,7 +65,10 @@ int create_task(struct Liste *listTaskHead, struct timing *t, char **cmd, struct
 	close(stderr_file_fd);
 
 	sprintf(path_tmp,"%s/times_exit-code",path);
-	int te_file_fd = open(path_tmp,O_RDONLY | O_CREAT,0644);
+	int te_file_fd = open(path_tmp,O_WRONLY | O_CREAT,0644);
+	
+	uint32_t size = 0; 
+	int ret = write(te_file_fd,&size,4);
 	close(te_file_fd);
 	
 	//printList(listTaskHead);
@@ -181,7 +184,25 @@ int execute_task(struct task *task) {
 	char buf[strlen("tasks/") + sizeof(int)];
 	sprintf(buf,"%s%d","tasks/",task->id);
 
-	char tmp[strlen("tasks/") + sizeof(int) + 6];
+	char tmp[strlen("tasks/") + sizeof(int) + 16];
+
+	sprintf(tmp,"%s%s",buf,"/times_exit-code");
+	int tx = open(tmp,O_RDWR);
+
+	uint32_t runCount = 0;
+	int ret = read(tx,&runCount,4);
+	runCount = htobe32(be32toh(runCount)+1);
+	lseek(tx,0,SEEK_SET);
+	ret = write(tx,&runCount,4);
+
+	lseek(tx,0,SEEK_END);
+	int64_t timeNow = htobe64(time(NULL));
+	ret = write(tx,&timeNow,8);
+
+	uint16_t exitCode = 0xFFFF;
+	ret = write(tx,&exitCode,2);
+
+	close(tx);
 	
 	sprintf(tmp,"%s%s",buf,"/stdout");
 	int stdout_fd = open(tmp,O_WRONLY);
@@ -195,6 +216,21 @@ int execute_task(struct task *task) {
 	execvp(task->cmd[0],task->cmd);
 	return -1;
 }
+
+void writeTaskExitCode(uint8_t code, int id) {
+	
+		char path[strlen("tasks/")+ sizeof(int) + strlen("/times_exit-code")];
+		sprintf(path,"%s%d%s","tasks/",id,"/times_exit-code");
+
+		int tx_file_fd = open(path,O_WRONLY);
+		lseek(tx_file_fd,-2,SEEK_END);
+		uint16_t return_code = 0;
+		memcpy(&return_code,&code,1);
+		return_code = htobe16(return_code);
+
+		write(tx_file_fd,&return_code,2);
+		close(tx_file_fd);
+}	
 
 void addLaunchedTask(struct LaunchedTaskHead *h, struct LaunchedTask *t) {
 	struct LaunchedTask *current = h->head;

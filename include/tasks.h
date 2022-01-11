@@ -47,6 +47,7 @@ struct task *getTaskByID(struct Liste *h, int id);
 int create_task(struct Liste *listTaskHead, struct timing *t, char **cmd, struct task *exec_times);
 int delete_task(struct Liste *listTaskHead, int taskid);
 int execute_task(struct task *task);
+void writeTaskExitCode(uint8_t code, int id);
 int task_should_run(struct task *ta);
 void addList(struct Liste *listTaskHead, struct task *task);
 void printList(struct Liste *listTaskHead);
