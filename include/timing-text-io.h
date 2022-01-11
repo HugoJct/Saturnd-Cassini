@@ -38,5 +38,7 @@ int timing_uint_from_string(unsigned long int * dest, const char * string);
 int timing_string_from_field(char * dest, unsigned int min, unsigned int max, uint64_t field);
 int timing_string_from_range(char * dest, unsigned int start, unsigned int stop);
 
+int timing_compare_timing(struct timing *t1, struct timing *t2);
+
 
 #endif // TIMING_TEXT_IO_H
