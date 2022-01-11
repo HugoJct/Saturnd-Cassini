@@ -108,6 +108,8 @@ int read_stderr_stdout_resp(int fd) {
 			res = read(fd,&error_code,2);
 			assert(res == 2);
 
+			error_code = be16toh(error_code);
+
 			eval_error_type(fd, error_code);
 
 			return 1;
@@ -133,6 +135,7 @@ int read_stderr_stdout_resp(int fd) {
 }
 
 void eval_error_type(int fd, uint16_t error_code) {
+	
 	switch(error_code) {
 		// two error cases
 		case 0x4e46:

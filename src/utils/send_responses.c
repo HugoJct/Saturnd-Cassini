@@ -72,25 +72,30 @@ int send_so_response(int fd, int fdTask) {
         return count > 0 ? 0 : -1;
 }
 
-int send_se_response(int fd, char task_path) {
+int send_se_response(int fd, char *task_path) {
+        printf("%s\n", task_path);
         /* declare variables */
-        char buffer[4];
         int count;
         uint16_t reptype;
         uint16_t repErr;
         reptype = htobe16(SERVER_REPLY_ERROR);
 
-        DIR *dir = opendir(&task_path);
+        DIR *dir = opendir(task_path);
 
         if (dir != NULL) {
                 repErr = htobe16(SERVER_REPLY_ERROR_NEVER_RUN);
+                printf("found\n");
         } else {
+                printf("not found\n");
                 repErr = htobe16(SERVER_REPLY_ERROR_NOT_FOUND);
         }
-
+        char buffer[sizeof(reptype)+sizeof(repErr)];
         memmove(buffer, &reptype, sizeof(reptype));
         memmove(buffer+sizeof(reptype), &repErr, sizeof(repErr));
-        count = write(fd, &buffer, sizeof(buffer));
+        
+        printf("%s\n", buffer);
+
+        count = write(fd, buffer, sizeof(buffer));
 
         close(fd);
 
