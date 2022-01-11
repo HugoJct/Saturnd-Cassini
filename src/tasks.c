@@ -201,3 +201,22 @@ void printList(struct Liste *listTaskHead){
 		}
 		printf("| NULL ] Fin de liste \n");
 }
+
+int task_exist(struct Liste *listTaskHead, int taskId){
+	struct task *courant = listTaskHead->premier;
+
+	if(courant == NULL){
+		return -1; // la liste est vide
+	}else{
+		if(courant->id == taskId)return 0;
+		while (courant->next != NULL)
+		{
+			struct task *targetTask = courant->next;
+			if(targetTask->id == taskId)return 0; 
+			//on avance
+			courant = courant->next;
+		} 
+
+	}
+	return -1;
+}

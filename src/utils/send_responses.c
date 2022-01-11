@@ -37,9 +37,23 @@ int send_rm_response(int fd, int reponse){
         return rep;
 }
 
-int send_tx_response(int fd){
-        //TODO
-        return 0;
+int send_tx_response(int fd, int reponse){
+        
+        int rep;
+        switch (reponse)
+        {
+        case -1:
+                uint16_t err = htobe16(SERVER_REPLY_ERROR);
+	        uint16_t nf = htobe16(SERVER_REPLY_ERROR_NOT_FOUND);
+                rep = write(fd, &err, 2);
+                break;
+        default:
+        	uint16_t ok = htobe16(SERVER_REPLY_OK);
+                rep = write(fd, &ok,2);
+                break;
+        
+        }
+        return rep;
 }
 
 int send_so_response(int fd){

@@ -58,7 +58,11 @@ int read_request(int fd, Liste *listTaskHead) {
 					}
 			break;
 		case CLIENT_REQUEST_GET_TIMES_AND_EXITCODES:
-			send_tx_response(res_fd);	//not yet written
+			uint64_t taskid;
+			memcpy(&taskid,buf+2,sizeof(taskid));
+			int reponseTask = task_exist(listTaskHead, be64toh(taskid));
+			int reponse = send_tx_response(res_fd, reponseTask);	//not yet written
+			assert(reponse >= 0);
 			break;
 		case CLIENT_REQUEST_GET_STDOUT:
 			send_so_response(res_fd);	//not yet written
