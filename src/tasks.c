@@ -68,7 +68,7 @@ int create_task(struct Liste *listTaskHead, struct timing *t, char **cmd, struct
 	int te_file_fd = open(path_tmp,O_WRONLY | O_CREAT,0644);
 	
 	uint32_t size = 0; 
-	int ret = write(te_file_fd,&size,4);
+	write(te_file_fd,&size,4);
 	close(te_file_fd);
 	
 	//printList(listTaskHead);
@@ -190,17 +190,17 @@ int execute_task(struct task *task) {
 	int tx = open(tmp,O_RDWR);
 
 	uint32_t runCount = 0;
-	int ret = read(tx,&runCount,4);
+	read(tx,&runCount,4);
 	runCount = htobe32(be32toh(runCount)+1);
 	lseek(tx,0,SEEK_SET);
-	ret = write(tx,&runCount,4);
+	write(tx,&runCount,4);
 
 	lseek(tx,0,SEEK_END);
 	int64_t timeNow = htobe64(time(NULL));
-	ret = write(tx,&timeNow,8);
+	write(tx,&timeNow,8);
 
 	uint16_t exitCode = 0xFFFF;
-	ret = write(tx,&exitCode,2);
+	write(tx,&exitCode,2);
 
 	close(tx);
 	
