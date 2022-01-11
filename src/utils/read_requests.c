@@ -60,10 +60,25 @@ int read_request(int fd, Liste *listTaskHead) {
 			break;
 							     }
 		case CLIENT_REQUEST_GET_STDOUT:
-			send_so_response(res_fd);	//not yet written
+			{ 
+			uint64_t task_id;
+			memcpy(&task_id, buf+2, sizeof(task_id));
+			task_id = be64toh(task_id);
+			char task_path[strlen("tasks/") + sizeof(task_id) + strlen("/stdout") + 1];
+			sprintf(task_path,"%s%ld%s","tasks/",task_id,"/stdout");
+			int task_fd = open(task_path, O_RDONLY);
+			send_so_response(res_fd, task_fd);
+			}
 			break;
 		case CLIENT_REQUEST_GET_STDERR:
-			send_se_response(res_fd);	//not yet written
+			{ 
+			uint64_t task_id;
+			memcpy(&task_id, buf+2, sizeof(task_id));
+			task_id = be64toh(task_id);
+			char task_path[strlen("tasks/") + sizeof(task_id) + 1];
+			sprintf(task_path,"%s%ld","tasks/",task_id);
+			send_se_response(res_fd, task_path);
+			}
 			break;
 		case CLIENT_REQUEST_TERMINATE:
 			send_tm_response(res_fd);
