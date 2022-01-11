@@ -53,25 +53,22 @@ int send_tx_response(int fd, int reponse, int task_id){
         default:
         	uint16_t ok = htobe16(SERVER_REPLY_OK); 
                 //path
-                char path[strlen("tasks/")+sizeof(int)];
-                sprintf(path,"tasks/%d", task_id);	
+                char path[strlen("tasks/")+sizeof(int)+strlen("//times_exit-code")+1];
+                sprintf(path,"tasks/%d/%s", task_id, "times_exit-code");	
 
-                //file open
-                FILE * f = fopen (path, "r");
-                fseek (f, 0, SEEK_END);//donne la taille du fichier
-                int length = ftell (f);
-                fseek (f, 0, SEEK_SET);
+	        int fd = open(path, O_RDONLY);	//creating file + opening it
+                int length = lseek (fd, 0, SEEK_END);//donne la taille du fichier
+                lseek (fd, 0, SEEK_SET);
 
                 //buffer
-                char buff[sizeof(ok) + length+1];
+                char buff[sizeof(ok) + length];
 
                 memmove(buff, &ok, 2);
 
-                fread (buff+2, 1, length, f);
-                fclose(f);
+                read(fd, &buff+2, length);
+                close(fd);
                 rep = write(fd, &buff, 2+length);
                 break;
-        
         }
         return rep;
 }
