@@ -219,8 +219,9 @@ int execute_task(struct task *task) {
 
 void writeTaskExitCode(uint8_t code, int id) {
 	
-		char path[strlen("tasks/")+ sizeof(int) + strlen("/times_exit-code")];
+		char path[strlen("tasks/")+ sizeof(int) + strlen("/times_exit-code") + 1 ];
 		sprintf(path,"%s%d%s","tasks/",id,"/times_exit-code");
+		printf("%d\n",code);
 
 		int tx_file_fd = open(path,O_WRONLY);
 		lseek(tx_file_fd,-2,SEEK_END);

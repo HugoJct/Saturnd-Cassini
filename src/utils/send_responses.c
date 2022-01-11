@@ -42,7 +42,7 @@ int     send_tx_response(int fd, int reponse, int task_id){
         int rep;
         switch (reponse)
         {
-        case -1:
+        case -1: {
                 uint16_t err = htobe16(SERVER_REPLY_ERROR);
 	        uint16_t nf = htobe16(SERVER_REPLY_ERROR_NOT_FOUND);
                 char buf[sizeof(err) + sizeof(nf)];
@@ -50,7 +50,8 @@ int     send_tx_response(int fd, int reponse, int task_id){
                 memmove(buf+2, &nf, 2);
                 rep = write(fd, &buf, 4);
                 break;
-        default:
+		 }
+        default: {
         	uint16_t ok = htobe16(SERVER_REPLY_OK); 
                 //path
                 char path[strlen("tasks/")+sizeof(int)+strlen("//times_exit-code")+1];
@@ -67,6 +68,7 @@ int     send_tx_response(int fd, int reponse, int task_id){
                 rep = write(fd, buff, length);
                 close(fd);
                 break;
+		 }
         }       
         return rep;
 }

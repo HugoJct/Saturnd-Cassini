@@ -8,7 +8,7 @@ void handler(int sig) {
 
 int main(int argc, char **argv) {
 	
-	daemonize();
+	//daemonize();
 
 	char *username = getlogin();
 	
@@ -61,15 +61,20 @@ int main(int argc, char **argv) {
 
 			struct LaunchedTask *current = lth->head;
 			while(current != NULL) {							//for all launched tasks
-				int *status = NULL;
-				int zombie = waitpid(current->pid,status,WNOHANG);			//check if they have exited
+				int status;
+				int zombie = waitpid(current->pid,&status,WNOHANG);			//check if they have exited
 				uint8_t return_value = 0; 
-				if(status != NULL && WIFEXITED(*status)) {				//if they have exited write their exit code on disk
-					return_value = WEXITSTATUS(*status);
-					writeTaskExitCode(return_value,current->id);	
-				}
+
 				
 				if(zombie) {								//if the task terminated
+
+					
+					if(WIFEXITED(status)) {
+						return_value = WEXITSTATUS(status);
+						writeTaskExitCode(return_value,current->id);	
+					}
+					
+
 					struct task *tmp = getTaskByID(listTaskHead,current->id);
 					tmp->canRun = 1;						//allow to run on the next minute
 					removeLaunchedTask(lth,current);				//remove it from the launched tasks
