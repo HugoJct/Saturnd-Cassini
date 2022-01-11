@@ -15,7 +15,7 @@ int main(int argc, char **argv) {
 	char path[strlen("/tmp/") + strlen(username) + strlen("/saturnd/pipes/saturnd-request-pipe") + 1]; 
 	sprintf(path,"%s%s%s","/tmp/",username,"/saturnd/pipes/saturnd-request-pipe");
 
-	int req_fd = open(path,O_RDONLY);		//open the requet pipe
+	int req_fd = open(path,O_RDWR);		//open the requet pipe as reader AND writer to avoid raising POLLHUP with poll
 	if(req_fd < 0)
 		goto error;
 
@@ -40,8 +40,12 @@ int main(int argc, char **argv) {
 	Liste *listTaskHead = malloc(sizeof(Liste));
 	listTaskHead->premier = NULL;
 
+	struct LaunchedTaskHead *lth = malloc(sizeof(struct LaunchedTaskHead));
+	lth->head = NULL;
+
 	while(1) {
-		poll(pfd,2,-1);			//wait for the client to write on the pipe
+		int time_remaining = (60 - (time(NULL) % 60)) * 1000;
+		poll(pfd,2,time_remaining);			//wait for the client to write on the pipe
 
 		if(pfd[0].revents & POLLIN) {
 			int ret = read_request(req_fd, listTaskHead);		//read the request written
@@ -54,9 +58,46 @@ int main(int argc, char **argv) {
 		if(pfd[1].revents & POLLIN) {		//if a child has terminated
 			char tmp[PIPE_BUF];
 			read(self_pipe[0],&tmp,PIPE_BUF);	//empty the self pipe
-			wait(NULL);							//collect the child status
+
+			struct LaunchedTask *current = lth->head;
+			while(current != NULL) {							//for all launched tasks
+				int *status = NULL;
+				int zombie = waitpid(current->pid,status,WNOHANG);			//check if they have exited
+				uint8_t return_value = 0; 
+				if(status != NULL && WIFEXITED(*status)) {				//if they have exited write their exit code on disk
+					return_value = WEXITSTATUS(*status);
+					writeTaskExitCode(return_value,current->id);	
+				}
+				
+				if(zombie) {								//if the task terminated
+					struct task *tmp = getTaskByID(listTaskHead,current->id);
+					tmp->canRun = 1;						//allow to run on the next minute
+					removeLaunchedTask(lth,current);				//remove it from the launched tasks
+					current = lth->head;
+					continue;							//contiue browsing
+				}		
+				current = current->next;
+			}
 		}
 
+		struct task *current = listTaskHead->premier;
+		while(current != NULL) {									//for all taskss
+			if(task_should_run(current) && (time(NULL) % 60) == 0 && current->canRun) {		//if they can and should run
+				int task_pid = execute_task(current);						//execute it
+
+				struct LaunchedTask *t = malloc(sizeof(struct LaunchedTask));			
+				t->id = current->id;
+				t->pid = task_pid;
+				t->next = NULL;
+
+				addLaunchedTask(lth,t);								//add it to the list
+				current->canRun = 0;								//forbid it to run on the next minute
+			}
+			current = current->next;
+		}
+
+		while(time(NULL) % 60 == 0)									//wait until the next second	(probably not the cleanest way to do it)
+			sleep(1);
 	}
 	
 
@@ -65,15 +106,11 @@ terminate:					//if the daemon must terminate
 	close(self_pipe[1]);
 	close(req_fd);
 	free(listTaskHead);
-	printf("terminé");
 	return EXIT_SUCCESS;
 	
 error:						//if an error in encountered
 	close(self_pipe[0]);
 	close(self_pipe[1]);
 	close(req_fd);
-	printf("terminé avec failure");
-
 	return EXIT_FAILURE;
-
 }

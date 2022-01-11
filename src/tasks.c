@@ -25,6 +25,8 @@ int create_task(struct Liste *listTaskHead, struct timing *t, char **cmd, struct
 	task->id = highest+1;
 	task->exec_times = t;
 	task->cmd = cmd;
+	task->canRun = 1;
+
 	task->next = NULL;
 	addList(listTaskHead, task);
 
@@ -63,7 +65,10 @@ int create_task(struct Liste *listTaskHead, struct timing *t, char **cmd, struct
 	close(stderr_file_fd);
 
 	sprintf(path_tmp,"%s/times_exit-code",path);
-	int te_file_fd = open(path_tmp,O_RDONLY | O_CREAT,0644);
+	int te_file_fd = open(path_tmp,O_WRONLY | O_CREAT,0644);
+	
+	uint32_t size = 0; 
+	write(te_file_fd,&size,4);
 	close(te_file_fd);
 	
 	//printList(listTaskHead);
@@ -133,12 +138,12 @@ struct timing *get_current_timing() {
 	int hour = (ti / 3600) % 24 + 1;
 	int minute = (ti / 60) % 60;
 
-	uint8_t day_b = 0x00 | (0x01 << day);
+	uint8_t day_b = (0x01 << day);
 
-	uint32_t hours_b = 0x00000000 | (0x00000001 << hour);
+	uint32_t hours_b = (0x00000001 << hour);
 	hours_b = htobe32(hours_b);
 
-	uint64_t minutes_b = 0x000000000000000 | (0x0000000000000001 << minute);
+	uint64_t minutes_b = (0x0000000000000001 << minute);
 	minutes_b = htobe64(minutes_b);
 
 	struct timing *t = malloc(sizeof(struct timing));
@@ -151,28 +156,125 @@ struct timing *get_current_timing() {
 
 int task_should_run(struct task *ta) {
 	struct timing *now = get_current_timing();
-	int boolean = 0;
+	int boolean = 1;
 
 	//Testing minutes
 	if((ta->exec_times->minutes & now->minutes) == 0)
 		boolean = 0;
-	else 
-		boolean = 1;	
 
 	//Testing hours
 	if((ta->exec_times->hours & now->hours) == 0)
 		boolean = 0;
-	else
-		boolean = 1;	
 	
 	//Testing days
 	if((ta->exec_times->daysofweek & now->daysofweek) == 0)
 		boolean = 0;
-	else
-		boolean = 1;	
 	
 	free(now);
 	return boolean;
+}
+
+int execute_task(struct task *task) {
+	int pid = fork();
+	if(pid == -1)
+		return -1;
+	if(pid != 0)
+		return pid;
+	
+	char buf[strlen("tasks/") + sizeof(int)];
+	sprintf(buf,"%s%d","tasks/",task->id);
+
+	char tmp[strlen("tasks/") + sizeof(int) + 16];
+
+	sprintf(tmp,"%s%s",buf,"/times_exit-code");
+	int tx = open(tmp,O_RDWR);
+
+	uint32_t runCount = 0;
+	read(tx,&runCount,4);
+	runCount = htobe32(be32toh(runCount)+1);
+	lseek(tx,0,SEEK_SET);
+	write(tx,&runCount,4);
+
+	lseek(tx,0,SEEK_END);
+	int64_t timeNow = htobe64(time(NULL));
+	write(tx,&timeNow,8);
+
+	uint16_t exitCode = 0xFFFF;
+	write(tx,&exitCode,2);
+
+	close(tx);
+	
+	sprintf(tmp,"%s%s",buf,"/stdout");
+	int stdout_fd = open(tmp,O_WRONLY);
+
+	sprintf(tmp,"%s%s",buf,"/stderr");
+	int stderr_fd = open(tmp,O_WRONLY);
+	
+	dup2(stdout_fd,1);
+	dup2(stderr_fd,2);
+
+	execvp(task->cmd[0],task->cmd);
+	return -1;
+}
+
+void writeTaskExitCode(uint8_t code, int id) {
+	
+		char path[strlen("tasks/")+ sizeof(int) + strlen("/times_exit-code")];
+		sprintf(path,"%s%d%s","tasks/",id,"/times_exit-code");
+
+		int tx_file_fd = open(path,O_WRONLY);
+		lseek(tx_file_fd,-2,SEEK_END);
+		uint16_t return_code = 0;
+		memcpy(&return_code,&code,1);
+		return_code = htobe16(return_code);
+
+		write(tx_file_fd,&return_code,2);
+		close(tx_file_fd);
+}	
+
+void addLaunchedTask(struct LaunchedTaskHead *h, struct LaunchedTask *t) {
+	struct LaunchedTask *current = h->head;
+
+	if(current == NULL) {
+		h->head = t;
+	} else {
+		while(current->next != NULL)
+			current = current->next;
+		current-> next = t;
+	}
+}
+
+void removeLaunchedTask(struct LaunchedTaskHead *h, struct LaunchedTask *t) {
+	struct LaunchedTask *current = h->head;
+
+	if(current == t) {
+		h->head = t->next;
+		free(t);
+		return;
+	}
+
+	while(current->next != t) {
+		current = current->next;
+	}
+	struct LaunchedTask *found = current->next;
+	current->next = current->next->next;
+	free(found);
+}
+
+struct task *getTaskByID(struct Liste *h, int id) {
+	struct task *t = h->premier;
+	while(t->id != id)
+		t = t->next;
+	return t;
+}
+
+void printLaunchedTasks(struct LaunchedTaskHead *h) {
+	struct LaunchedTask *current = h->head;
+	while(current != NULL) {
+		printf("%d -> ",current->id);
+		current = current->next;
+	}
+	printf("NULL");
 }
 
 void addList(struct Liste *listTaskHead, struct task *task){

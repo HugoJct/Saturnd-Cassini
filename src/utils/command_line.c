@@ -47,10 +47,11 @@ char **arg_array_from_buf(char *buf) {
 		padding += 4;
 		arg_len = be32toh(arg_len);
 
-		argv[i] = malloc(arg_len+1);
+		argv[i] = calloc(arg_len+1,1);
 
 		char arg_tmp[arg_len];
 		memcpy(arg_tmp,buf+padding,arg_len);
+		memset(arg_tmp+arg_len,0,1);
 		padding += arg_len;
 		memcpy(argv[i],arg_tmp,arg_len);
 	}

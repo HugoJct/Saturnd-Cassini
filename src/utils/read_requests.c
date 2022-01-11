@@ -27,26 +27,17 @@ int read_request(int fd, Liste *listTaskHead) {
 		case CLIENT_REQUEST_CREATE_TASK:
 			{
 				
-				struct timing t;
-				memcpy(&t,buf+2,13);
+				struct timing *t = malloc(sizeof(struct timing));
+				memcpy(t,buf+2,13);
 				char **cmd = arg_array_from_buf(buf+15);
 				struct task *task = NULL;
-				int task_id = create_task(listTaskHead, &t,cmd,task);	
+				int task_id = create_task(listTaskHead, t,cmd,task);	
 
 				int ret = send_cr_response(res_fd, task_id);
 				if(ret < 0)
 					return -1;	
 				close(res_fd);
 
-				/*		This part was meant for testing purposes
-				int pid = fork();
-				switch(pid) {
-					case 0:
-						execvp(cmd[0],cmd);
-						break;
-					default:
-						break;
-				}	*/
 			}
 			break;
 		case CLIENT_REQUEST_REMOVE_TASK: {
