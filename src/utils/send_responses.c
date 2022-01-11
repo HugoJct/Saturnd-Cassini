@@ -1,10 +1,40 @@
 #include "utils/send_responses.h"
 
 
-int send_ls_response(int fd){
-        //TODO
+int send_ls_response(int fd, struct Liste *listTaskHead){
+        
+        int16_t reptype = htobe16(SERVER_REPLY_OK);
+        int32_t nbtasks = numberTask(listTaskHead);
+
+	write(fd, &reptype, 2);
+        write(fd, &nbtasks, 4);
+
+        struct task *courant = listTaskHead->premier;
+	while (courant != NULL){
+	 uint64_t taskId = courant->id;
+
+         struct timing *timing = courant->exec_times;
+	 uint64_t minutes =  timing->minutes;
+	 uint32_t hours = timing->hours;
+	 uint8_t daysofweek = timing->daysofweek;
+
+	 write(fd, &taskId, sizeof(taskId));
+	 write(fd, &minutes, sizeof(minutes));
+	 write(fd, &hours, sizeof(hours));
+         write(fd, &daysofweek, sizeof(daysofweek));
+
+	 char **cmd = courant->cmd;
+
+	 for(int ag = 0; ag < sizeof(cmd); ag++){
+	   uint32_t length = strlen(cmd[ag]);
+           write(fd, &length, sizeof(length));
+           write(fd, cmd[ag], be32toh(length));
+	}
+
+        } 
         return 0;
 }
+
 
 int send_cr_response(int fd, int task_id){
 	char buf[10];

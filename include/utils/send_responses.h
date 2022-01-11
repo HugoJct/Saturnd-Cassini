@@ -8,8 +8,9 @@
 #include <string.h>
 
 #include "server-reply.h"
+#include "tasks.h"
 
-int send_ls_response(int fd);
+int send_ls_response(int fd, struct Liste *listTaskHead);
 int send_cr_response(int fd, int task_id);
 int send_rm_response(int fd, int response);
 int send_tx_response(int fd);
