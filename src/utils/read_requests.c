@@ -50,9 +50,12 @@ int read_request(int fd, Liste *listTaskHead) {
 			break;
 		case CLIENT_REQUEST_GET_TIMES_AND_EXITCODES:
 			uint64_t taskid;
-			memcpy(&taskid,buf+2,sizeof(taskid));
-			int reponseTask = task_exist(listTaskHead, be64toh(taskid));
-			int reponse = send_tx_response(res_fd, reponseTask, taskid);
+			memcpy(&taskid,buf+2, sizeof(taskid));
+			
+			size_t taskIdHost = be64toh(taskid);
+			int reponseTask = task_exist(listTaskHead, taskIdHost);
+			int reponse = send_tx_response(res_fd, reponseTask, taskIdHost);
+			
 			assert(reponse >= 0);
 			break;
 		case CLIENT_REQUEST_GET_STDOUT:

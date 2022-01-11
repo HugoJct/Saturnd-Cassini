@@ -37,7 +37,7 @@ int send_rm_response(int fd, int reponse){
         return rep;
 }
 
-int send_tx_response(int fd, int reponse, int task_id){
+int     send_tx_response(int fd, int reponse, int task_id){
          
         int rep;
         switch (reponse)
@@ -56,20 +56,18 @@ int send_tx_response(int fd, int reponse, int task_id){
                 char path[strlen("tasks/")+sizeof(int)+strlen("//times_exit-code")+1];
                 sprintf(path,"tasks/%d/%s", task_id, "times_exit-code");	
 
-	        int fd = open(path, O_RDONLY);	//creating file + opening it
-                int length = lseek (fd, 0, SEEK_END);//donne la taille du fichier
-                lseek (fd, 0, SEEK_SET);
+	        int fd_file = open(path, O_RDONLY);	//creating file + opening it
+                int length = lseek(fd_file, 0, SEEK_END);//donne la taille du fichier
+                lseek(fd_file, 0, SEEK_SET);
 
                 //buffer
-                char buff[sizeof(ok) + length];
-
-                memmove(buff, &ok, 2);
-
-                read(fd, &buff+2, length);
+                char buff[length];
+                read(fd_file, buff, length);
+                rep = write(fd, &ok, 2);
+                rep = write(fd, buff, length);
                 close(fd);
-                rep = write(fd, &buff, 2+length);
                 break;
-        }
+        }       
         return rep;
 }
 

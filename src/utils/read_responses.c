@@ -195,7 +195,7 @@ int read_tx_resp(int fd) {
 		time_t time = be64toh(runtime);
 		char buf[25];
 		strftime(buf,25,"%Y-%m-%d %H:%M:%S",localtime(&time));		//format the runtime to something readable
-		printf("%s %d\n",buf, exitcode);
+		printf("%s %d\n",buf, be16toh(exitcode));
 
 
 	}
