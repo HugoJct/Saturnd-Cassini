@@ -63,20 +63,22 @@ int main(int argc, char **argv) {
 			while(current != NULL) {
 				int status;
 				int zombie = waitpid(current->pid,&status,WNOHANG);
+				uint8_t return_value = WIFEXITED(status) ? WEXITSTATUS(status) : 0xFFFF;
 				
 				if(zombie) {
+					struct task *tmp = getTaskByID(listTaskHead,current->id);
+					tmp->canRun = 1;
 					removeLaunchedTask(lth,current);
 					current = lth->head;
 					continue;
 				}
-				uint8_t return_value = WIFEXITED(status) ? WEXITSTATUS(status) : 0xFFFF;
 				current = current->next;
 			}
 		}
 
 		struct task *current = listTaskHead->premier;
 		while(current != NULL) {
-			if(task_should_run(current) && (time(NULL) % 60) == 0) {
+			if(task_should_run(current) && (time(NULL) % 60) == 0 && current->canRun) {
 				int task_pid = execute_task(current);
 
 				struct LaunchedTask *t = malloc(sizeof(struct LaunchedTask));
@@ -85,6 +87,7 @@ int main(int argc, char **argv) {
 				t->next = NULL;
 
 				addLaunchedTask(lth,t);
+				current->canRun = 0;
 			}
 			current = current->next;
 		}

@@ -20,7 +20,7 @@ struct task {
 	char **cmd;
 	struct timing *exec_times;
 	struct task *next;
-	
+	int canRun;	
 };
 
 struct LaunchedTask {

@@ -25,6 +25,7 @@ int create_task(struct Liste *listTaskHead, struct timing *t, char **cmd, struct
 	task->id = highest+1;
 	task->exec_times = t;
 	task->cmd = cmd;
+	task->canRun = 1;
 
 	task->next = NULL;
 	addList(listTaskHead, task);
