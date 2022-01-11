@@ -56,12 +56,11 @@ int send_so_response(int fd, int fdTask) {
         /* read file related to fdTask into bufferOutput */
         read(fdTask, bufferOutput, numbytes);
         
+        /* create custom string */
         struct custom_string str;
         create_custom_string(&str, bufferOutput);
         count = format_from_string(bufferToWrite+2, &str);
 
-        printf("%d\n", count);
-        printf("%s\n", bufferToWrite);
         assert(count != -1);
 
         /* copy all the text from task file into response buffer */
@@ -109,6 +108,8 @@ int send_se_response(int fd, char *task_path) {
                 } else {
                         repErr = htobe16(SERVER_REPLY_ERROR_NEVER_RUN);
                 }
+                close(task_fd);
+                close(exit_code_fd);
         } else {
                 repErr = htobe16(SERVER_REPLY_ERROR_NOT_FOUND);
         }

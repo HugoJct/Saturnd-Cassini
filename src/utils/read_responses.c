@@ -99,6 +99,7 @@ int read_stderr_stdout_resp(int fd) {
 
 	// convert code from bigendian
 	code = be16toh(code);
+
 	int output_length = 0;
 
 	// check what is the good kind of error
@@ -107,9 +108,7 @@ int read_stderr_stdout_resp(int fd) {
 			// Read error_code
 			res = read(fd,&error_code,2);
 			assert(res == 2);
-
 			error_code = be16toh(error_code);
-
 			eval_error_type(fd, error_code);
 
 			return 1;
@@ -119,6 +118,7 @@ int read_stderr_stdout_resp(int fd) {
 			res = read(fd, &output, sizeof(uint32_t));
 			// define output length
 			output_length = be32toh(output);
+
 			assert(res == sizeof(uint32_t));
 
 			// new buffer to write the output
@@ -135,7 +135,6 @@ int read_stderr_stdout_resp(int fd) {
 }
 
 void eval_error_type(int fd, uint16_t error_code) {
-	
 	switch(error_code) {
 		// two error cases
 		case 0x4e46:
