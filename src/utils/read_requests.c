@@ -21,11 +21,10 @@ int read_request(int fd, Liste *listTaskHead) {
 
 	switch(opcode) {
 		case CLIENT_REQUEST_LIST_TASKS:
-
-			send_ls_response(res_fd);	//not yet written
+			send_ls_response(res_fd, listTaskHead);	//not yet written
 			break;
 		case CLIENT_REQUEST_CREATE_TASK:
-			{
+			{ 
 				
 				struct timing *t = malloc(sizeof(struct timing));
 				memcpy(t,buf+2,13);
