@@ -45,7 +45,10 @@ int send_tx_response(int fd, int reponse){
         case -1:
                 uint16_t err = htobe16(SERVER_REPLY_ERROR);
 	        uint16_t nf = htobe16(SERVER_REPLY_ERROR_NOT_FOUND);
-                rep = write(fd, &err, 2);
+                char buf[sizeof(err) + sizeof(nf)];
+                memmove(buf, err, 2);
+                memmove(buf+2, nf, 2);
+                rep = write(fd, &buf, 4);
                 break;
         default:
         	uint16_t ok = htobe16(SERVER_REPLY_OK);
