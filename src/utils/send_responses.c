@@ -37,8 +37,8 @@ int send_rm_response(int fd, int reponse){
         return rep;
 }
 
-int send_tx_response(int fd, int reponse){
-        
+int send_tx_response(int fd, int reponse, int task_id){
+         
         int rep;
         switch (reponse)
         {
@@ -46,13 +46,30 @@ int send_tx_response(int fd, int reponse){
                 uint16_t err = htobe16(SERVER_REPLY_ERROR);
 	        uint16_t nf = htobe16(SERVER_REPLY_ERROR_NOT_FOUND);
                 char buf[sizeof(err) + sizeof(nf)];
-                memmove(buf, err, 2);
-                memmove(buf+2, nf, 2);
+                memmove(buf, &err, 2);
+                memmove(buf+2, &nf, 2);
                 rep = write(fd, &buf, 4);
                 break;
         default:
-        	uint16_t ok = htobe16(SERVER_REPLY_OK);
-                rep = write(fd, &ok,2);
+        	uint16_t ok = htobe16(SERVER_REPLY_OK); 
+                //path
+                char path[strlen("tasks/")+sizeof(int)];
+                sprintf(path,"tasks/%d", task_id);	
+
+                //file open
+                FILE * f = fopen (path, "r");
+                fseek (f, 0, SEEK_END);//donne la taille du fichier
+                int length = ftell (f);
+                fseek (f, 0, SEEK_SET);
+
+                //buffer
+                char buff[sizeof(ok) + length+1];
+
+                memmove(buff, &ok, 2);
+
+                fread (buff+2, 1, length, f);
+                fclose(f);
+                rep = write(fd, &buff, 2+length);
                 break;
         
         }

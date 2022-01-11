@@ -61,7 +61,7 @@ int read_request(int fd, Liste *listTaskHead) {
 			uint64_t taskid;
 			memcpy(&taskid,buf+2,sizeof(taskid));
 			int reponseTask = task_exist(listTaskHead, be64toh(taskid));
-			int reponse = send_tx_response(res_fd, reponseTask);	//not yet written
+			int reponse = send_tx_response(res_fd, reponseTask, taskid);
 			assert(reponse >= 0);
 			break;
 		case CLIENT_REQUEST_GET_STDOUT:
