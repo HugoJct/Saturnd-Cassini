@@ -154,23 +154,32 @@ void from_disk_to_memory(struct Liste *listTaskHead){
 	DIR *dir = opendir("./tasks/");
 	struct dirent *d;
 	
+	int fd;
+	
 	while((d = readdir(dir)) != NULL) {
 		struct task *taskDir = malloc(sizeof(struct task));
 		int idDir = atoi(d->d_name);
 		if(idDir > 0){
-			taskDir->id = (atoi(d->d_name));
 
+			taskDir->id = idDir;
 			//Cmd 
-			int fd = open("./tasks/", O_RDONLY);
+
+			char path[20];
+			sprintf(path, "%s/%d/%s", "tasks", idDir,"cmd");
+
+			fd = open(path, O_RDONLY);
 			int count = lseek(fd, 0, SEEK_END);
+
 			char buffCmd[count];
 			lseek(fd, 0, SEEK_SET);
-			int countRead = read(fd, buffCmd, count);
+
+			read(fd, &buffCmd, count);
 			taskDir->cmd = arg_array_from_buf(buffCmd);
-			
+
 			//Exce times
 
-			fd = open("/tasks/", O_RDONLY);
+			sprintf(path, "%s/%d/%s", "tasks", idDir,"exec_time");
+			fd = open(path,O_RDONLY);
 			
 			uint64_t minutes;
   			uint32_t hours;
@@ -185,6 +194,7 @@ void from_disk_to_memory(struct Liste *listTaskHead){
 			exec_times->hours = hours;
 			exec_times->minutes = minutes;
 			taskDir->exec_times = exec_times; 
+			//ajout à la liste
 			addList(listTaskHead, taskDir);
 		}
 	}
