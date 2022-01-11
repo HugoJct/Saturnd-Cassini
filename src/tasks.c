@@ -149,6 +149,24 @@ struct timing *get_current_timing() {
 	return t;
 }
 
+void from_disk_to_memory(struct Liste *listTaskHead){
+
+	DIR *dir = opendir("./tasks/");
+	struct dirent *d;
+	
+	while((d = readdir(dir)) != NULL) {
+		struct task *taskDir = malloc(sizeof(struct task));
+		int idDir = atoi(d->d_name);
+		if(idDir > 0){
+			taskDir->id = (atoi(d->d_name));
+			//taskDir->cmd = arg_array_from_buf(buffCmd);
+			//taskDir->exec_times = 
+			addList(listTaskHead, taskDir);
+		}
+	}
+	closedir(dir);
+}
+
 int task_should_run(struct task *ta) {
 	struct timing *now = get_current_timing();
 	int boolean = 0;

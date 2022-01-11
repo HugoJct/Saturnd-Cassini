@@ -35,5 +35,6 @@ void addList(struct Liste *listTaskHead, struct task *task);
 void printList(struct Liste *listTaskHead);
 struct timing *get_current_timing();
 void deleteFileAndRep(int taskID);
+void from_disk_to_memory(struct Liste *listTaskHead);
 
 #endif

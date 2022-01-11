@@ -8,7 +8,15 @@ void handler(int sig) {
 
 int main(int argc, char **argv) {
 	
-	daemonize();
+	//daemonize();
+
+
+//Pour l'instant je mets la tete de list ici
+	Liste *listTaskHead = malloc(sizeof(Liste));
+	listTaskHead->premier = NULL;
+
+	from_disk_to_memory(listTaskHead);
+	printList(listTaskHead);
 
 	char *username = getlogin();
 	
@@ -36,10 +44,7 @@ int main(int argc, char **argv) {
 
 	sigaction(SIGCHLD,&sa,NULL);			//applying the sigaction
 
-//Pour l'instant je mets la tete de list ici
-	Liste *listTaskHead = malloc(sizeof(Liste));
-	listTaskHead->premier = NULL;
-
+//	printList(listTaskHead);
 	while(1) {
 		poll(pfd,2,-1);			//wait for the client to write on the pipe
 
