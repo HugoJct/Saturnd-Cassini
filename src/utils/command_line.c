@@ -59,7 +59,7 @@ char **arg_array_from_buf(char *buf) {
 	return argv;
 }
 
-char **arg_array_from_buf_file(char *str) {
+char **arg_array_from_buf_linaire(char *str) {
 
 	int init_size = strlen(str);
 	char delim[] = " ";
@@ -79,8 +79,6 @@ char **arg_array_from_buf_file(char *str) {
 							   the character's ASCII equivalent */
 	}
 	printf("\n");
-
-	return 0;
 
 	return argv;
 }

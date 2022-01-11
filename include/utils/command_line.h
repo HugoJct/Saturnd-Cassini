@@ -23,4 +23,6 @@ int create_commandline(struct commandline *command, int argc, char *argv[]);
 char **arg_array_from_buf(char *buf);
 //converts a commandline sent from cassini into an arg vector to feed exec()
 
+char **arg_array_from_buf_linaire(char *str);
+//convertie un char simple en char double exemple "echo test" "[["echo"], ["test"]]
 #endif
