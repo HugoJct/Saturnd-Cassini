@@ -132,8 +132,8 @@ int send_se_response(int fd, char *task_path) {
         sprintf(task_path_err,"%s%s",task_path,"/stderr");
 
         /* get exitcode path */
-        char task_path_ex[sizeof(task_path) + strlen("/times_exit-codes") + 1];
-        sprintf(task_path_ex,"%s%s",task_path,"/times_exit-codes");
+        char task_path_ex[sizeof(task_path) + strlen("/times_exit-code") + 1];
+        sprintf(task_path_ex,"%s%s",task_path,"/times_exit-code");
 
         if (dir != NULL) {
                 /* try to open stderr file */
