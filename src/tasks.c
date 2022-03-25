@@ -134,8 +134,8 @@ void deleteFileAndRep(int taskId){
 struct timing *get_current_timing() {
 
 	int ti = time(NULL);
-	int day = (ti / 86400) % 7 - 3;
-	int hour = (ti / 3600) % 24 + 1;
+	int day = (ti / 86400 + 4) % 7;	//+ 4 because 01/01/1970 was a thursday
+	int hour = (ti / 3600) % 24 + 1;	//+1 to have UTC +1 time
 	int minute = (ti / 60) % 60;
 
 	uint8_t day_b = (0x01 << day);
@@ -214,7 +214,7 @@ int execute_task(struct task *task) {
 	dup2(stderr_fd,2);
 
 	execvp(task->cmd[0],task->cmd);
-	return -1;
+	exit(-1);
 }
 
 void writeTaskExitCode(uint8_t code, int id) {
