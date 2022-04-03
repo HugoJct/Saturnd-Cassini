@@ -14,8 +14,8 @@
 
 #include "client-request.h"
 #include "server-reply.h"
-#include "requests.h"
-#include "responses.h"
+#include "utils/send_requests.h"
+#include "utils/read_responses.h"
 #include "utils/custom_string.h"
 #include "timing.h"
 

@@ -91,7 +91,7 @@ int main(int argc, char * argv[]) {
   //if the user did not specify a pipes dir -> use the default one
   if(pipes_directory == NULL) {
 	char *user = getlogin();
-	pipes_directory = malloc(strlen("/tmp/") + strlen(user) + strlen("/saturnd/pipes/"));
+	pipes_directory = malloc(strlen("/tmp/") + strlen(user) + strlen("/saturnd/pipes/") + 1);
 	assert(pipes_directory != NULL);
 	strcpy(pipes_directory,"/tmp/");
 	strcat(pipes_directory,user);
@@ -145,12 +145,12 @@ int main(int argc, char * argv[]) {
   	case CLIENT_REQUEST_GET_TIMES_AND_EXITCODES:
 		ret = send_tx_req(pipe_req, taskid);
 		assert(ret >= 0);
-  		break;
-  	case CLIENT_REQUEST_GET_STDOUT:
+		break;
+	case CLIENT_REQUEST_GET_STDOUT:
 		ret = send_stdout_req(pipe_req, taskid);
 		assert(ret >= 0);
-  		break;
-  	case CLIENT_REQUEST_GET_STDERR:
+		break;
+	case CLIENT_REQUEST_GET_STDERR:
 		ret = send_stder_req(pipe_req, taskid);
 		assert(ret >= 0);
   		break;
@@ -188,7 +188,6 @@ int main(int argc, char * argv[]) {
     case CLIENT_REQUEST_GET_TIMES_AND_EXITCODES:
       ret = read_tx_resp(pipe_reply);
       assert(ret >= 0);
-
       return ret;
       break;
     case CLIENT_REQUEST_GET_STDOUT:
